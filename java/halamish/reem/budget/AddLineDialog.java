@@ -14,17 +14,22 @@ import android.widget.EditText;
  */
 public class AddLineDialog extends Activity {
     private static final String TAG = "add line dialog";
+    public static final String ITEM_NAME = "item_name";
     Button btn_add;
     EditText edt_title, edt_details, edt_amount;
     CheckBox cbx_expense;
+    private String item_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_line);
 
-        final String item_name = getIntent().getStringExtra("item_name");
-        // TODO somehow understand which item are we talking about. pass through intent will be the best
+        if (savedInstanceState != null) {
+            item_name = savedInstanceState.getString(ITEM_NAME);
+        } else { // first time - will get by the intent
+            item_name = getIntent().getStringExtra(ITEM_NAME);
+        }
 
         edt_amount = (EditText) findViewById(R.id.edt_addline_amount);
         edt_details = (EditText) findViewById(R.id.edt_addline_details);
@@ -36,7 +41,7 @@ public class AddLineDialog extends Activity {
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BudgetLine toPrepare;
+                BudgetLine newbie;
                 String title, details;
                 int amount = 0;
 
@@ -47,9 +52,9 @@ public class AddLineDialog extends Activity {
                     amount = -amount;
                 }
 
-                toPrepare = new BudgetLine(title, details, amount, utils.getToday());
+                newbie = new BudgetLine(title, details, amount, utils.getToday());
                 DatabaseHandler db = new DatabaseHandler(AddLineDialog.this);
-                db.tblAddBudgetLine(new BudgetItem(item_name) , toPrepare, null);
+                db.tblAddBudgetLine(db.getBudgetItem(item_name, null) , newbie, null);
 
                 finish();
 
@@ -67,5 +72,11 @@ public class AddLineDialog extends Activity {
             return 0;
         }
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(ITEM_NAME, item_name);
+        super.onSaveInstanceState(outState);
     }
 }

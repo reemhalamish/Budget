@@ -7,8 +7,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class ItemActivity extends AppCompatActivity {
+    private static final String ITEM_NAME = "item_name";
+    private static final int NEW_LINE_REQUEST = 1;
+
+
     ListView allItems;
     ListViewItemAdapter aa;
     private String budgetItemName;
@@ -19,21 +24,17 @@ public class ItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item);
 
-        budgetItemName = (String) getIntent().getStringExtra("item_name");
+        if (savedInstanceState != null) {
+            budgetItemName = savedInstanceState.getString(ITEM_NAME);
+        } else {
+            budgetItemName = getIntent().getStringExtra(ITEM_NAME);
+        }
         // TODO can be erase at change orientation. put it inside the savedInstnaceState
         allItems =(ListView) findViewById(R.id.lv_itemactivity_main);
         db = new DatabaseHandler(this);
-        aa = new ListViewItemAdapter(this, R.layout.budget_line, db.tblGetAllBudgetLines(new BudgetItem(budgetItemName), null), db.getBudgetItem(budgetItemName, null), getNewLineListener());
+        BudgetItem curItem = db.getBudgetItem(budgetItemName, null);
+        aa = new ListViewItemAdapter(this, R.layout.budget_line, db.tblGetAllBudgetLines(curItem, null), curItem, getNewLineListener());
         allItems.setAdapter(aa);
-    }
-
-    /**
-     * Dispatch onStart() to all fragments.  Ensure any created loaders are
-     * now started.
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
         db.insertAdapter(aa);
     }
 
@@ -70,9 +71,39 @@ public class ItemActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent addLineIntent = new Intent(ItemActivity.this, AddLineDialog.class);
-                addLineIntent.putExtra("item_name", budgetItemName);
-                startActivity(addLineIntent); // TODO forResult()
+                addLineIntent.putExtra(AddLineDialog.ITEM_NAME, budgetItemName);
+                startActivityForResult(addLineIntent, NEW_LINE_REQUEST);
             }
         };
+    }
+
+    /**
+     * Dispatch incoming result to the correct fragment.
+     *
+     * @param requestCode - the req code
+     * @param resultCode - result ok or not
+     * @param data - the intent itself
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == NEW_LINE_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(this, "line has been added!", Toast.LENGTH_SHORT).show();
+                aa.notifyDataSetChanged();
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    /**
+     * Save all appropriate fragment state.
+     *
+     * @param outState
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(ITEM_NAME, budgetItemName);
+        super.onSaveInstanceState(outState);
     }
 }

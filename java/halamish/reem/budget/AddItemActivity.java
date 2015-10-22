@@ -1,5 +1,6 @@
 package halamish.reem.budget;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -43,8 +44,10 @@ public class AddItemActivity extends AppCompatActivity {
                 }
                 new DatabaseHandler(AddItemActivity.this).addBudgetItem(newItem, null);
 
+                Intent returnIntent = new Intent();
+                setResult(RESULT_OK, returnIntent);
                 finish();
-                // TODO forResult() on MainActivity
+
             }
         });
 

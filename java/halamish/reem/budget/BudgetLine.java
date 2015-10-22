@@ -13,12 +13,12 @@ public class BudgetLine {
     private String date;
 
 
-    public BudgetLine() {
-        title = "automaticly created";
-        details = "not any details";
-        amount = -5;
-        date = Calendar.getInstance().getTime().toString();
-    }
+//    public BudgetLine() {
+//        title = "automaticly created";
+//        details = "not any details";
+//        amount = -5;
+//        date = Calendar.getInstance().getTime().toString();
+//    }
 
     public BudgetLine(String title, String details, int amount, String date) {
         this.title = title;
@@ -28,7 +28,10 @@ public class BudgetLine {
     }
 
     public BudgetLine(int id, String title, String details, int amount, String date ) {
-        this(title, details, amount, date);
+        this.title = title;
+        this.details = details;
+        this.amount = amount;
+        this.date = date;
         this.id = id;
     }
 

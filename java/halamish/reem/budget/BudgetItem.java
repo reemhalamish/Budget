@@ -23,23 +23,23 @@ public class BudgetItem {
 
     public BudgetItem() {}
 
-    public BudgetItem(String name) {
-        this(0, name);
-    }
+//    public BudgetItem(String name) {
+//        this(0, name);
+//    }
 
-    public BudgetItem(int id, String name) {
-        this(id, name, CUR_VALUE_DEFAULT);
-    }
+//    public BudgetItem(int id, String name) {
+//        this(id, name, CUR_VALUE_DEFAULT);
+//    }
 
-    public BudgetItem(int id, String name, int cur_value) {
-        this.id = id;
-        this.cur_value = cur_value;
-        this.name = name;
-    }
+//    public BudgetItem(int id, String name, int cur_value) {
+//        this.id = id;
+//        this.cur_value = cur_value;
+//        this.name = name;
+//    }
 
-    public BudgetItem(String name, int auto_update_amount) {
-        this(name, BudgetItem.MONTHLY, auto_update_amount);
-    }
+//    public BudgetItem(String name, int auto_update_amount) {
+//        this(name, BudgetItem.MONTHLY, auto_update_amount);
+//    }
 
     public BudgetItem(String name, String auto_update, int auto_update_amount) {
         this.name = name;

@@ -578,12 +578,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                BudgetLine line = new BudgetLine();
-                line.setId(Integer.parseInt(cursor.getString(0)));
-                line.setTitle(cursor.getString(1));
-                line.setDetails(cursor.getString(2));
-                line.setAmount(Integer.parseInt(cursor.getString(3)));
-                line.setDate(cursor.getString(4));
+                BudgetLine line = new BudgetLine(
+                Integer.parseInt(cursor.getString(0)),
+                cursor.getString(1),
+                cursor.getString(2),
+                Integer.parseInt(cursor.getString(3)),
+                cursor.getString(4));
 
                 // Adding item to list
                 budgetLines.add(line);
