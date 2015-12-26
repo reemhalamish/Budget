@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by Re'em on 10/17/2015.
  */
-public class ListViewItemAdapter extends ArrayAdapter<BudgetLine> {
+public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
     private static final String TAG = "listAdapter";
     private List<BudgetLine> allItems;
     private View.OnClickListener newLineListener;
@@ -88,9 +88,12 @@ public class ListViewItemAdapter extends ArrayAdapter<BudgetLine> {
         return super.getCount() + 1;
     }
 
+
     @Override
-    public void notifyDataSetChanged() {
+    public void updateAdapter() {
+        clear();
         allItems = new DatabaseHandler(getContext()).tblGetAllBudgetLines(item, null);
-        super.notifyDataSetChanged();
+        addAll(allItems);
+        notifyDataSetChanged();
     }
 }

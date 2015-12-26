@@ -1,9 +1,7 @@
 package halamish.reem.budget;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -23,7 +21,7 @@ public class AddLineDialog extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_line);
+        setContentView(R.layout.dialog_add_line);
 
         if (savedInstanceState != null) {
             item_name = savedInstanceState.getString(ITEM_NAME);
@@ -54,11 +52,9 @@ public class AddLineDialog extends Activity {
 
                 newbie = new BudgetLine(title, details, amount, utils.getToday());
                 DatabaseHandler db = new DatabaseHandler(AddLineDialog.this);
-                db.tblAddBudgetLine(db.getBudgetItem(item_name, null) , newbie, null);
+                db.tblAddBudgetLine(db.getBudgetItem(item_name) , newbie);
 
                 finish();
-
-                // TODO forResult() on MainActivity, need to put HERE the result code so it will notify the aa
             }
         });
 

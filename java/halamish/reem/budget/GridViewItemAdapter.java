@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by Re'em on 10/17/2015.
  */
-public class GridViewItemAdapter extends ArrayAdapter<BudgetItem> {
+public class GridViewItemAdapter extends MyAdapter<BudgetItem> {
     private List<BudgetItem> allItems;
     private View.OnClickListener newItemListener, everyViewListener;
     private View.OnLongClickListener everyViewLongClickListener;
@@ -57,7 +57,7 @@ public class GridViewItemAdapter extends ArrayAdapter<BudgetItem> {
         txtAmount.setText("" + cur_value);
 
         if (cur_value >= 0) {
-            txtAmount.setTextColor(Color.GREEN);
+            txtAmount.setTextColor(Color.parseColor("#008811"));
             txtTitle.setTextColor(Color.GREEN);
         } else {
             txtAmount.setTextColor(Color.RED);
@@ -94,9 +94,13 @@ public class GridViewItemAdapter extends ArrayAdapter<BudgetItem> {
         return super.getCount() + 1;
     }
 
+
     @Override
-    public void notifyDataSetChanged() {
-        allItems = new DatabaseHandler(getContext()).getAllBudgetItems(null);
-        super.notifyDataSetChanged();
+    public void updateAdapter() {
+        clear();
+        List<BudgetItem> newItems = new DatabaseHandler(getContext()).getAllBudgetItems(null);
+        addAll(newItems);
+        allItems = newItems;
+        notifyDataSetChanged();
     }
 }

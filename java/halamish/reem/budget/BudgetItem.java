@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.nio.Buffer;
 
+
 /**
  * Created by Re'em on 10/17/2015.
  */
@@ -18,6 +19,7 @@ public class BudgetItem {
     private int cur_value = CUR_VALUE_DEFAULT;
     private String auto_update = MONTHLY;
     private int auto_update_amount = AUTO_UPDATE_DEFAULT;
+    private int order_id;
 
 
 
@@ -47,12 +49,22 @@ public class BudgetItem {
         this.auto_update_amount = auto_update_amount;
     }
 
-    public BudgetItem(int id, String name, int cur_value, String auto_update, int auto_update_amount) {
+//    public BudgetItem(int id, String name, int cur_value, String auto_update, int auto_update_amount) {
+//        this.id = id;
+//        this.name = name;
+//        this.cur_value = cur_value;
+//        this.auto_update = auto_update;
+//        this.auto_update_amount = auto_update_amount;
+//        this.order_id = id;
+//    }
+
+    public BudgetItem(int id, String name, int cur_value, String auto_update, int auto_update_amount, int order_id) {
         this.id = id;
         this.name = name;
         this.cur_value = cur_value;
         this.auto_update = auto_update;
         this.auto_update_amount = auto_update_amount;
+        this.order_id = order_id;
     }
 
     public int getId() {
@@ -66,7 +78,8 @@ public class BudgetItem {
 
 
     public String getName() {
-        String good_name = name.replace(' ', '_');
+//        String good_name = name.replace(' ', '_');
+        String good_name = name.replace(' ', '_').replaceAll("[^\\u0590-\\u05FFa-zA-Z0-9_]", "");
         return good_name;
     }
 
@@ -105,8 +118,16 @@ public class BudgetItem {
         this.auto_update_amount = auto_update_amount;
     }
 
+    public int getOrder_id() {
+        return order_id;
+    }
+
+    public void setOrder_id(int order_id) {
+        this.order_id = order_id;
+    }
+
     public void logMyself() {
-        Log.d(TAG, name + " id: " + id + ", curValue: " + cur_value + ", autoUpdate: " + auto_update + ", autoUpdateAmount: " + auto_update_amount);
+        Log.d(TAG, name + " id: " + id + ", curValue: " + cur_value + ", autoUpdate: " + auto_update + ", autoUpdateAmount: " + auto_update_amount + ", order_id: " + order_id);
     }
 }
 

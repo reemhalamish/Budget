@@ -1,5 +1,8 @@
 package halamish.reem.budget;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -7,11 +10,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "main";
     private static final String REPORT_FILE_NAME = "budget_report.txt";
     private static final int ADD_ITEM_REQUEST = 1;
+    private static final int EDIT_ITEM_REQUEST = 2;
     private GridView gv_all_items;
     private GridViewItemAdapter aa;
     private DatabaseHandler db;
@@ -34,7 +35,43 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         gv_all_items = (GridView) findViewById(R.id.gv_main_all_items);
         db = new DatabaseHandler(this);
-//        db.deleteAll();
+        init_db();
+
+        aa = new GridViewItemAdapter(this, R.layout.budget_item, db.getAllBudgetItems(null), everyItemOnClickListener(), everyItemLongClick(), addNewItemListener());
+        gv_all_items.setAdapter(aa);
+
+
+
+        findViewById(R.id.iv_main_add).setOnClickListener(addNewItemListener());
+    }
+
+    private void init_db() {
+
+        db.deleteAll(null);
+        String weekly = BudgetItem.WEEKLY, monthly = BudgetItem.MONTHLY;
+        db.addBudgetItem(new BudgetItem("אוכל בחוץ", weekly, 45));
+        db.addBudgetItem(new BudgetItem("כושר", monthly, 10));
+        db.addBudgetItem(new BudgetItem("מתנות", monthly, 5));
+        db.addBudgetItem(new BudgetItem("מאפים", weekly, 20));
+        db.addBudgetItem(new BudgetItem("בריאות", monthly, 10));
+        db.addBudgetItem(new BudgetItem("דייטים", monthly, 150));
+        db.addBudgetItem(new BudgetItem("בגדים", monthly, 100));
+        db.addBudgetItem(new BudgetItem("אקסטרה", weekly, 50));
+        db.addBudgetItem(new BudgetItem("כלי כתיבה", monthly, 10));
+        db.addBudgetItem(new BudgetItem("יציאה עם המשפחה", monthly, 30));
+        db.addBudgetItem(new BudgetItem("נסיעות", monthly, 25));
+        db.addBudgetItem(new BudgetItem("נעליים", monthly, 25));
+        db.addBudgetItem(new BudgetItem("קפה", weekly, 10));
+        db.addBudgetItem(new BudgetItem("כביסה", weekly, 14));
+        db.addBudgetItem(new BudgetItem("תרופות", monthly, 50));
+        db.addBudgetItem(new BudgetItem("הגיינה", monthly, 30));
+        db.addBudgetItem(new BudgetItem("יציאות עם חברים", weekly, 15));
+        db.addBudgetItem(new BudgetItem("שונות", monthly, 120));
+        db.addBudgetItem(new BudgetItem("רמי לוי", monthly, 150));
+        db.addBudgetItem(new BudgetItem("TODO", monthly, 0));
+
+
+        //        db.deleteAll();
 //        db.addBudgetItem(new BudgetItem("מותרות", 50));
 //        db.addBudgetItem(new BudgetItem("שונות", 80));
 //        db.addBudgetItem(new BudgetItem("weekly item", BudgetItem.WEEKLY, 20));
@@ -50,21 +87,8 @@ public class MainActivity extends AppCompatActivity {
 //        newbie.setAuto_update(BudgetItem.WEEKLY);
 //        db.addBudgetItem(newbie);
 //        db.updateBudgetItemByName("מותרות", -80);
-        aa = new GridViewItemAdapter(this, R.layout.budget_item, db.getAllBudgetItems(null), everyItemOnClickListener(), everyItemLongClickListener(), addNewItemListener());
-        gv_all_items.setAdapter(aa);
     }
 
-    private View.OnLongClickListener everyItemLongClickListener() {
-        return new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                String itemName = (String) view.getTag();
-                BudgetItem item = new DatabaseHandler(MainActivity.this).getBudgetItem(itemName, null);
-
-                return true;
-            }
-        };
-    }
 
     /**
      * Dispatch onStart() to all fragments.  Ensure any created loaders are
@@ -76,7 +100,20 @@ public class MainActivity extends AppCompatActivity {
         db.insertAdapter(aa);
     }
 
-
+    /**
+     * Dispatch onResume() to fragments.  Note that for better inter-operation
+     * with older versions of the platform, at the point of this call the
+     * fragments attached to the activity are <em>not</em> resumed.  This means
+     * that in some cases the previous state may still be saved, not allowing
+     * fragment transactions that modify the state.  To correctly interact
+     * with fragments in their proper state, you should instead override
+     * {@link #onResumeFragments()}.
+     */
+    @Override
+    protected void onResume() {
+        aa.notifyDataSetChanged();
+        super.onResume();
+    }
 
     @Override
     protected void onDestroy() {
@@ -122,11 +159,85 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
+    View.OnLongClickListener everyItemLongClick() {
+        final Context context = this;
+        return new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                // create a list of options
+                final CharSequence[] options = {"edit", "show details", "create new with same budget", "clear", "DELETE"};
+                final String itemName = (String) view.getTag();
+                new AlertDialog.Builder(context)
+                        .setTitle((String) view.getTag())
+                        .setItems(options, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                switch (i) {
+                                    case 0: // edit
+                                        createEditDialog(itemName);
+                                        break;
+                                    case 1: // show details
+                                        ItemActivity.createItemInfoDialog(context, itemName);
+                                        break;
+                                    case 2: // copy barebones - only the auto_update and update_amount with new name
+                                        // TODO implement it in the db
+                                        Toast.makeText(context, "not yet. TODO", Toast.LENGTH_SHORT).show();
+                                        break;
+                                    case 3: // clear
+                                        db.clearBudgetItem(db.getBudgetItem(itemName));
+                                        break;
+                                    case 4: // DELETE
+                                        createDeleteDialog(itemName);
+                                        break;
+
+                                }
+                            }
+                        })
+                        .setCancelable(true)
+                        .create()
+                        .show();
+                return true;
+            }
+
+            private void createDeleteDialog(final String budgetItemName) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                builder.setTitle("Confirm deleting " + budgetItemName);
+                builder.setMessage("sure to DELETE?");
+                builder.setCancelable(true);
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        db.deleteBudgetItem(db.getBudgetItem(budgetItemName), null);
+                        dialog.dismiss();
+                    }
+                });
+
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+
+            private void createEditDialog(final String itemName) {
+                Intent editItemIntent = new Intent(MainActivity.this, MessWithItemDialog.class);
+                editItemIntent.putExtra("item_action", MessWithItemDialog.ItemAction.EDIT);
+                editItemIntent.putExtra("item_name", itemName);
+                MainActivity.this.startActivity(editItemIntent); //TODO ForResult EDIT_ITEM_REQUEST
+            }
+        };
+    }
+
     View.OnClickListener addNewItemListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.this.startActivityForResult(new Intent(MainActivity.this, AddItemActivity.class), ADD_ITEM_REQUEST); // TODO for result
+                Intent addItemIntent = new Intent(MainActivity.this, MessWithItemDialog.class);
+                addItemIntent.putExtra("item_action", MessWithItemDialog.ItemAction.ADD);
+                MainActivity.this.startActivity(addItemIntent); // TODO ForResult ADD_ITEM_REQUEST
             }
         };
     }
@@ -143,6 +254,11 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == ADD_ITEM_REQUEST) {
             if (resultCode == RESULT_OK) {
                 Toast.makeText(this, "item added succefully!", Toast.LENGTH_SHORT).show();
+                aa.notifyDataSetChanged();
+            }
+        } else if (requestCode == EDIT_ITEM_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(this, "item edited succefully!", Toast.LENGTH_SHORT).show();
                 aa.notifyDataSetChanged();
             }
         } else {

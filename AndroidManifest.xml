@@ -23,9 +23,10 @@
             android:label="@string/title_activity_item" >
         </activity>
         <activity
-            android:name=".AddItemActivity"
-            android:label="@string/title_activity_add_item" >
-        </activity>
+            android:name=".MessWithItemDialog"
+            android:label="@string/title_activity_add_item"
+            android:theme="@style/Base.Theme.AppCompat.Dialog"
+            />
         <activity android:name=".AddLineDialog"
             android:theme="@style/Base.Theme.AppCompat.Dialog"
             />
