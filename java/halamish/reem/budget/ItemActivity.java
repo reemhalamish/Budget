@@ -68,6 +68,11 @@ public class ItemActivity extends AppCompatActivity {
             return true;
         }
 
+        else if (id == R.id.action_item_clear) {
+            db.clearBudgetItem(db.getBudgetItem(budgetItemName));
+            return true;
+        }
+
         else if (id == R.id.action_item_del) {
             createDeleteDialog(this, budgetItemName);
             return true;

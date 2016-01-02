@@ -67,8 +67,8 @@ public class MessWithItemDialog extends AppCompatActivity {
                     Log.d(TAG, "sending to db handler... method: " + newItem.getAuto_update());
                     new DatabaseHandler(MessWithItemDialog.this).updateBudgetItem(oldItem, newItem, null);
 
-//                Intent returnIntent = new Intent();
-//                setResult(RESULT_OK, returnIntent);
+                Intent returnIntent = new Intent();
+                setResult(RESULT_OK, returnIntent);
                 finish();
 
             }

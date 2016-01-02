@@ -5,6 +5,19 @@
     android:layout_height="match_parent"
     >
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/vi"
+        android:alpha="0.2"
+        android:id="@+id/iv_item_hidden_vi"
+        android:visibility="visible"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
+
+        />
+
     <Space
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"

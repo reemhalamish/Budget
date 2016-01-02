@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -247,9 +248,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     // external!
     public BudgetItem getBudgetItem(String budgetItemName) {
-        BudgetItem retval;
-        SQLiteDatabase db = getWritableDatabase();
+        return getBudgetItemActual(budgetItemName, null);
+    }
 
+    // internal actual
+    private BudgetItem getBudgetItemActual(String budgetItemName, SQLiteDatabase db) {
+        BudgetItem retval;
+        boolean externalDB = (db != null);
+        if (!externalDB) {
+            db = this.getWritableDatabase();
+        }
         Cursor cursor = db.query(TABLE_ALL_TALBES, new String[]{
                         MA_KEY_ID,
                         MA_KEY_NAME,
@@ -271,13 +279,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     Integer.parseInt(cursor.getString(5))
             );
             cursor.close();
-            db.close();
+            if (!externalDB)
+                db.close();
             return retval;
         }
 
-        db.close();
+        if(!externalDB)
+            db.close();
         return null;
-
     }
 
     // Getting All budgetItems
@@ -379,6 +388,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         tblDeleteTable(item, db);
         db.delete(TABLE_ALL_TALBES, MA_KEY_ID + " = ?",
                 new String[]{String.valueOf(item.getId())});
+
+        if (!externalDb)
+            db.close();
+
+        notifyAdapters();
+    }
+
+    // deleting multiple budget items:
+    public void deleteBudgetItems(Collection<String> items, SQLiteDatabase db) {
+        boolean externalDb = db != null;
+        if (!externalDb)
+            db = this.getWritableDatabase();
+
+        for (String itemName : items) {
+            BudgetItem item = getBudgetItemActual(itemName, db);
+            tblDeleteTable(item, db);
+            db.delete(TABLE_ALL_TALBES, MA_KEY_ID + " = ?",
+                    new String[]{String.valueOf(item.getId())});
+        }
+
 
         if (!externalDb)
             db.close();

@@ -2,16 +2,16 @@ package halamish.reem.budget;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * Created by Re'em on 10/17/2015.
+ *
+ * The app controller :)
  */
 public class BudgetApp extends Application {
     private static final String TAG = "bapp";
@@ -28,7 +28,11 @@ public class BudgetApp extends Application {
 //        testTime();
 
         DatabaseHandler db = new DatabaseHandler(this);
-        initSchedulerForAddBudgetToItems(db); // before db calculates all the curValue's of the items
+        MainActivityMultiSelectHandler.getInstance().init(db);
+            // the handler is not using the db, don't worry
+
+        initSchedulerForAddBudgetToItems(db);
+            // before db calculates all the curValue's of the items at init()
         db.init();
 
     }
@@ -96,14 +100,10 @@ public class BudgetApp extends Application {
         editor.apply();
     }
 
-    private void testTime() {
-        Calendar a = Calendar.getInstance();
-        a.add(Calendar.DATE, -112);
-        Log.d(TAG, "time 112 days ago: " + a.getTime());
-        Log.d(TAG, "time 112 days ago: " +a.getTimeInMillis());
-        editor = prefs.edit();
-        editor.putLong("budget.lastUpdated", a.getTimeInMillis());
-        editor.apply();
+    @Override
+    public void onTerminate() {
+        MainActivityMultiSelectHandler.getInstance().freeMemory();
+        super.onTerminate();
     }
 }
 

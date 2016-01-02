@@ -9,4 +9,6 @@
     <string name="action_report">Generate Report</string>
     <string name="title_activity_item">ItemActivity</string>
     <string name="title_activity_add_item">AddItemActivity</string>
+    <string name="action_choose_multiple">Select multiple items</string>
+    <string name="action_item_clear">Clear item</string>
 </resources>

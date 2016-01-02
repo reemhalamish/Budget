@@ -1,5 +1,6 @@
 package halamish.reem.budget;
 
+import android.animation.LayoutTransition;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.io.File;
@@ -24,9 +26,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String REPORT_FILE_NAME = "budget_report.txt";
     private static final int ADD_ITEM_REQUEST = 1;
     private static final int EDIT_ITEM_REQUEST = 2;
+    private static final long ANIMATE_CHANGES_DUR = 300;
+
     private GridView gv_all_items;
     private GridViewItemAdapter aa;
     private DatabaseHandler db;
+    private MainActivityMultiSelectHandler multiSelectHandler;
 
 
     @Override
@@ -35,14 +40,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         gv_all_items = (GridView) findViewById(R.id.gv_main_all_items);
         db = new DatabaseHandler(this);
-        init_db();
+//        init_db();
+        aa = new GridViewItemAdapter(this, R.layout.budget_item, db.getAllBudgetItems(null), getEveryItemOnClickListener(), getEveryItemOnClickMultiSelectModeListener(), getEveryItemLongClick(), getAddNewItemListener());
 
-        aa = new GridViewItemAdapter(this, R.layout.budget_item, db.getAllBudgetItems(null), everyItemOnClickListener(), everyItemLongClick(), addNewItemListener());
+        multiSelectHandler = MainActivityMultiSelectHandler.getInstance();
+        multiSelectHandler.startModeBasedOnMemory(this, aa);
+
         gv_all_items.setAdapter(aa);
 
+        // transition of buttons:
+        RelativeLayout main_layout = (RelativeLayout) findViewById(R.id.rl_all_main);
+        LayoutTransition layoutTransition = main_layout.getLayoutTransition();
+        layoutTransition.setDuration(ANIMATE_CHANGES_DUR);
+        main_layout.setLayoutTransition(layoutTransition);
 
-
-        findViewById(R.id.iv_main_add).setOnClickListener(addNewItemListener());
     }
 
     private void init_db() {
@@ -89,6 +100,19 @@ public class MainActivity extends AppCompatActivity {
 //        db.updateBudgetItemByName("מותרות", -80);
     }
 
+    /**
+     * Take care of popping the fragment back stack or finishing the activity
+     * as appropriate.
+     */
+    @Override
+    public void onBackPressed() {
+        if (multiSelectHandler.isAtMultiSelectMode()) {
+            aa.endMultiSelect();
+            multiSelectHandler.startNormalState();
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     /**
      * Dispatch onStart() to all fragments.  Ensure any created loaders are
@@ -135,6 +159,24 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == R.id.action_choose_multiple) {
+            aa.startMultiSelect();
+            multiSelectHandler.startMultiSelect(true);
+            // TODO:
+            /*
+            ONEDAY disable and delete the "add new" item with motion
+            change the shortPressListener of items to be selected (maybe changed color, maybe "v")
+            options:
+               (on 0 selected - normal plus  ???)
+                on 1 selected - delete, edit, duplicate
+                on 2 selected - delete, swap
+                on 3+selected - delete
+
+            make a function that will return the plus and the "add new" back at the end of action
+             */
+            Toast.makeText(this, "NOT READY YET", Toast.LENGTH_SHORT);
+        }
+
         if (id == R.id.action_report) {
             generateReportOnSD();
             return true;
@@ -148,55 +190,74 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    View.OnClickListener everyItemOnClickListener() {
+    View.OnClickListener getEveryItemOnClickListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent gotoItem = new Intent(MainActivity.this, ItemActivity.class);
-                gotoItem.putExtra("item_name", (String) view.getTag());
+                gotoItem.putExtra("item_name", (String) view.getTag(R.id.TAG_BUDGETITEM_NAME));
                 MainActivity.this.startActivity(gotoItem);
             }
         };
     }
 
-    View.OnLongClickListener everyItemLongClick() {
+
+    View.OnClickListener getEveryItemOnClickMultiSelectModeListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String itemName = (String) view.getTag(R.id.TAG_BUDGETITEM_NAME);
+                MainActivityMultiSelectHandler.getInstance().updateButtons(view);
+                aa.notifyDataSetChanged();
+            }
+        };
+    }
+
+    View.OnLongClickListener getEveryItemLongClick() {
         final Context context = this;
         return new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                // create a list of options
-                final CharSequence[] options = {"edit", "show details", "create new with same budget", "clear", "DELETE"};
-                final String itemName = (String) view.getTag();
-                new AlertDialog.Builder(context)
-                        .setTitle((String) view.getTag())
-                        .setItems(options, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                switch (i) {
-                                    case 0: // edit
-                                        createEditDialog(itemName);
-                                        break;
-                                    case 1: // show details
-                                        ItemActivity.createItemInfoDialog(context, itemName);
-                                        break;
-                                    case 2: // copy barebones - only the auto_update and update_amount with new name
-                                        // TODO implement it in the db
-                                        Toast.makeText(context, "not yet. TODO", Toast.LENGTH_SHORT).show();
-                                        break;
-                                    case 3: // clear
-                                        db.clearBudgetItem(db.getBudgetItem(itemName));
-                                        break;
-                                    case 4: // DELETE
-                                        createDeleteDialog(itemName);
-                                        break;
+                multiSelectHandler.startMultiSelect(true);
 
-                                }
-                            }
-                        })
-                        .setCancelable(true)
-                        .create()
-                        .show();
+                final String itemName = (String) view.getTag(R.id.TAG_BUDGETITEM_NAME);
+                multiSelectHandler.updateButtons(view);
                 return true;
+//                if (1==1) {return true;} // TODO should i throw the rest down here?
+//
+//                // create a list of options
+//                final CharSequence[] options = {"edit", "show details", "create new with same budget", "clear", "DELETE"};
+//
+//                new AlertDialog.Builder(context)
+//                        .setTitle(itemName)
+//                        .setItems(options, new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialogInterface, int i) {
+//                                switch (i) {
+//                                    case 0: // edit
+//                                        createEditDialog(itemName);
+//                                        break;
+//                                    case 1: // show details
+//                                        ItemActivity.createItemInfoDialog(context, itemName);
+//                                        break;
+//                                    case 2: // copy barebones - only the auto_update and update_amount with new name
+//                                        // TODO implement it in the db
+//                                        Toast.makeText(context, "not yet. TODO", Toast.LENGTH_SHORT).show();
+//                                        break;
+//                                    case 3: // clear
+//                                        db.clearBudgetItem(db.getBudgetItem(itemName));
+//                                        break;
+//                                    case 4: // DELETE
+//                                        createDeleteDialog(itemName);
+//                                        break;
+//
+//                                }
+//                            }
+//                        })
+//                        .setCancelable(true)
+//                        .create()
+//                        .show();
+//                return true;
             }
 
             private void createDeleteDialog(final String budgetItemName) {
@@ -226,20 +287,24 @@ public class MainActivity extends AppCompatActivity {
                 Intent editItemIntent = new Intent(MainActivity.this, MessWithItemDialog.class);
                 editItemIntent.putExtra("item_action", MessWithItemDialog.ItemAction.EDIT);
                 editItemIntent.putExtra("item_name", itemName);
-                MainActivity.this.startActivity(editItemIntent); //TODO ForResult EDIT_ITEM_REQUEST
+                MainActivity.this.startActivityForResult(editItemIntent, EDIT_ITEM_REQUEST);
             }
         };
     }
 
-    View.OnClickListener addNewItemListener() {
+    public View.OnClickListener getAddNewItemListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent addItemIntent = new Intent(MainActivity.this, MessWithItemDialog.class);
                 addItemIntent.putExtra("item_action", MessWithItemDialog.ItemAction.ADD);
-                MainActivity.this.startActivity(addItemIntent); // TODO ForResult ADD_ITEM_REQUEST
+                MainActivity.this.startActivityForResult(addItemIntent, ADD_ITEM_REQUEST);
             }
         };
+    }
+
+    protected void finishLongPress() {
+        aa.endMultiSelect();
     }
 
     /**
@@ -298,4 +363,5 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, e.getMessage());
         }
     }
+
 }

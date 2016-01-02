@@ -4,6 +4,8 @@
     tools:context="halamish.reem.budget.ItemActivity">
     <item android:id="@+id/action_item_show_details" android:title="@string/action_item_show_details"
         android:orderInCategory="100" app:showAsAction="ifRoom" />
+    <item android:id="@+id/action_item_clear" android:title="@string/action_item_clear"
+        android:orderInCategory="100" app:showAsAction="ifRoom" />
     <item android:id="@+id/action_item_edit" android:title="@string/action_item_edit"
         android:orderInCategory="100" app:showAsAction="ifRoom" />
     <item android:id="@+id/action_item_del" android:title="@string/action_item_del"
