@@ -7,6 +7,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import halamish.reem.budget.data.BudgetLine;
+import halamish.reem.budget.data.DatabaseHandler;
+
 /**
  * Created by Re'em on 10/17/2015.
  */

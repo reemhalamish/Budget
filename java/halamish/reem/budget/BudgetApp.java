@@ -8,6 +8,10 @@ import android.util.Log;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import halamish.reem.budget.data.BudgetItem;
+import halamish.reem.budget.data.BudgetLine;
+import halamish.reem.budget.data.DatabaseHandler;
+
 /**
  * Created by Re'em on 10/17/2015.
  *
@@ -111,16 +115,32 @@ public class BudgetApp extends Application {
 /*
 
 TODO:
-create handlers for the syncs, s.t. if i change something (add \ delete) it will show up immidately
-add option to edit item\line on a long press, plus option to delete it
-visual design!!!
-import all this work to git
-instructions file at google drive
+* add option to edit line on a long press, plus option to delete it
+
+* visual design for line:
+    show just two columns: number and an icon for each one of four (automattically\manually plus\minus)
+    on pressing item, get into a dialog that shows it with all details.
+    on creating or editing item, get into a dialog that let you pick:
+        date(default)
+        amount(empty),
+        ?(choose an icon with default?)
+        heading(empty)
+        details(empty)
+    on long pressing item, you can:
+        edit
+        delete
+        view (same as clicking)
+    after all of those, there will be extra line of "sum"
+    after that line there will be another line of "add new?" in which the phone will roll into when onCreate() is called
+
+
+
+
  */
 
 
 /*
-LATERON
-add icons for the menu entries
-add option to edit each item\line on long-press
+ONEDAY
+when clicking the sum, it will open some nice animation of money and will show you some fancy graph
+
  */

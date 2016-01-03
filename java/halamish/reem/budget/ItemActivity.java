@@ -1,19 +1,21 @@
 package halamish.reem.budget;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class ItemActivity extends AppCompatActivity {
+import halamish.reem.budget.data.BudgetItem;
+import halamish.reem.budget.data.DatabaseHandler;
+
+public class ItemActivity extends Activity {
     private static final String ITEM_NAME = "item_name";
     private static final int NEW_LINE_REQUEST = 1;
     private static final String TAG = "ItemActivity";
@@ -34,7 +36,7 @@ public class ItemActivity extends AppCompatActivity {
         } else {
             budgetItemName = getIntent().getStringExtra(ITEM_NAME);
         }
-        // TODO can be erase at change orientation. put it inside the savedInstnaceState
+        // TODO can be erased at change orientation. put it inside the savedInstnaceState
         allItems =(ListView) findViewById(R.id.lv_itemactivity_main);
         db = new DatabaseHandler(this);
         BudgetItem curItem = db.getBudgetItem(budgetItemName);

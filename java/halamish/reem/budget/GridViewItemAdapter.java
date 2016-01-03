@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import halamish.reem.budget.data.BudgetItem;
+import halamish.reem.budget.data.DatabaseHandler;
+
 /**
  * Created by Re'em on 10/17/2015.
  *
@@ -106,9 +109,11 @@ public class GridViewItemAdapter extends MyAdapter<BudgetItem> {
 
         TextView txtTitle = (TextView) view.findViewById(R.id.tv_item_name);
         TextView txtAmount = (TextView) view.findViewById(R.id.tv_item_amount);
+        ImageView hiddenVi = (ImageView) view.findViewById(R.id.iv_item_hidden_vi);
 
         txtTitle.setText("Add new?");
         txtTitle.setTextColor(Color.BLUE);
+        hiddenVi.setVisibility(View.GONE);
 
         txtAmount.setText("");
 

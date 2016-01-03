@@ -21,6 +21,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import halamish.reem.budget.data.BudgetItem;
+import halamish.reem.budget.data.BudgetLine;
+import halamish.reem.budget.data.DatabaseHandler;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "main";
     private static final String REPORT_FILE_NAME = "budget_report.txt";
@@ -223,8 +227,9 @@ public class MainActivity extends AppCompatActivity {
                 final String itemName = (String) view.getTag(R.id.TAG_BUDGETITEM_NAME);
                 multiSelectHandler.updateButtons(view);
                 return true;
-//                if (1==1) {return true;} // TODO should i throw the rest down here?
-//
+//                if (1==1) {return true;} //
+// TODO should i throw the rest down here? they were able to get once on long press... now they are reachable inside the item view
+//  TODO solution: add an item looks like icon with (...) so that when pressing it this dialog will appear
 //                // create a list of options
 //                final CharSequence[] options = {"edit", "show details", "create new with same budget", "clear", "DELETE"};
 //

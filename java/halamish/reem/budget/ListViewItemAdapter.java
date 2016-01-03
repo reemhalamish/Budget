@@ -5,10 +5,13 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.List;
+
+import halamish.reem.budget.data.BudgetItem;
+import halamish.reem.budget.data.BudgetLine;
+import halamish.reem.budget.data.DatabaseHandler;
 
 /**
  * Created by Re'em on 10/17/2015.
@@ -47,8 +50,8 @@ public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
 //        }
 
 
-        view.findViewById(R.id.iv_line_separator).setBackgroundColor(Color.DKGRAY);
-
+//        view.findViewById(R.id.iv_line_separator).setBackgroundColor(Color.DKGRAY);
+// TODO retrn this ^ maybe
         BudgetLine curLine = allItems.get(position);
         int cur_value = curLine.getAmount();
         TextView txtTitle = (TextView) view.findViewById(R.id.tv_line_title);

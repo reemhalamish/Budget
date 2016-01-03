@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import halamish.reem.budget.data.BudgetItem;
+import halamish.reem.budget.data.DatabaseHandler;
+
 public class MessWithItemDialog extends AppCompatActivity {
     public enum ItemAction{ADD, EDIT}
     ItemAction action;

@@ -1,4 +1,4 @@
-package halamish.reem.budget;
+package halamish.reem.budget.data;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+
+import halamish.reem.budget.MyAdapter;
+import halamish.reem.budget.utils;
 
 /**
  * Created by Re'em on 10/17/2015.
@@ -193,7 +196,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     // Adding new item - external
     // includes also the header line "budget <?> created!"
-    void addBudgetItem(BudgetItem item) {
+    public void addBudgetItem(BudgetItem item) {
         SQLiteDatabase db = getWritableDatabase();
         addBudgetItem(item, db);
 
@@ -574,7 +577,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     // wrapper for adding, includes notifiynig
-    void tblAddBudgetLine(BudgetItem item, BudgetLine line) {
+    public void tblAddBudgetLine(BudgetItem item, BudgetLine line) {
         SQLiteDatabase db = getWritableDatabase();
         tblAddBudgetLineActual(item, line, db);
         db.close();
@@ -582,7 +585,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     //Adding multiple lines
-    void tblAddAllBudgetLines(BudgetItem item, List<BudgetLine> lines, SQLiteDatabase db) {
+    public void tblAddAllBudgetLines(BudgetItem item, List<BudgetLine> lines, SQLiteDatabase db) {
         boolean externalDB = db != null;
         if (!externalDB)
             db = getWritableDatabase();
@@ -597,7 +600,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
     // Getting the header line
-    BudgetLine tblGetBudgetItemHeaderLine(BudgetItem item, SQLiteDatabase db) {
+    private BudgetLine tblGetBudgetItemHeaderLine(BudgetItem item, SQLiteDatabase db) {
         BudgetLine retval;
 
         boolean externalDB = db != null;
