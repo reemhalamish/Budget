@@ -120,36 +120,32 @@ public class BudgetApp extends Application {
 /*
 
 TODO:
-* add option to edit line on a long press, plus option to delete it
-* update the "create csv output" option to reflect all the info
 
-* visual design for line:
-    show just two columns: number and an icon for each one of four (automattically\manually plus\minus)
-    on pressing item, get into a dialog that shows it with all details.
-    on creating or editing item, get into a dialog that let you pick:
-        date(default)
-        amount(empty),
-        ?(choose an icon with default?)
-        heading(empty)
-        details(empty)
-    on long pressing item, you can:
-        edit
-        delete
-        view (same as clicking)
-    after all of those, there will be extra line of "sum"
-    after that line there will be another line of "add new?" in which the phone will roll into when onCreate() is called
+@ add button for cleaning item on long-press
 
+@ add option to open a dialog with the line's info onPress on the line
 
-
+@ support for hebrew
 
  */
 
 
 /*
 ONEDAY
-when clicking the sum, it will open some nice animation of money and will show you some fancy graph
 
-the design of BudgetLineParsser will cause troubles when using long time - O(n)
+@ when clicking the sum, it will open some nice animation of money and will show you some fancy graph
+
+@ the design of BudgetLineParsser will cause troubles when using long time - O(n)
 should go for a better design - add column "archived" in BudgetLine SQLite tables and ask only for archived\all
 (then the parser will need an access to the db itself?)
+can be solved either by auto-deleting when reaching more then 1000 lines
+
+
+@ add some cute intro like "it's your first time here, do you want to add some of our common budgets?
+(supermarket, blahblahblah)
+with a checkbox and a default value that can be changed, plus add some more with an empty line (another empty line will appear if this line gets populated)
+
+
+@ make all work with db run in another thread and a nice spiralla thingy will move round until it's done
+
  */
