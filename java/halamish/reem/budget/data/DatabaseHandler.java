@@ -429,10 +429,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void clearBudgetItem(BudgetItem item) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        BudgetLine header = tblGetBudgetItemHeaderLine(item, db);
+//        BudgetLine header = tblGetBudgetItemHeaderLine(item, db);
         tblDeleteTable(item, db);
         tblCreateTable(item, db);
-        tblAddBudgetLineActual(item, header, db);
+        BudgetLine clearedHeader = new BudgetLine("Budget created!", "cleared as the user requested", item.getAuto_update_amount(), utils.getMillisecondNow(), BudgetLine.BudgetLineEventType.BUDGET_CREATED);
+        tblAddBudgetLineActual(item, clearedHeader, db);
 
         db.close();
         notifyAdapters();

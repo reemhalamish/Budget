@@ -34,15 +34,15 @@ public class ItemActivity extends AppCompatActivity {
     private static final long FADE_AWAY_DUR = 500; // for the sandclock onCliCkListener
     private static final long FRAME_CHANGE_DUR = 300;
     private static final int[] SANDCLOCK_FRAMES = new int[]{
-                R.mipmap.converted_sandclock_0,
-                R.mipmap.converted_sandclock_10,
-                R.mipmap.converted_sandclock_25,
-                R.mipmap.converted_sandclock_40,
-                R.mipmap.converted_sandclock_55,
-                R.mipmap.converted_sandclock_70,
-                R.mipmap.converted_sandclock_85,
-                R.mipmap.converted_sandclock_100,
-                R.mipmap.converted_sandclock_broken
+                R.mipmap.gray_converted_sandclock_0,
+                R.mipmap.gray_converted_sandclock_10,
+                R.mipmap.gray_converted_sandclock_25,
+                R.mipmap.gray_converted_sandclock_40,
+                R.mipmap.gray_converted_sandclock_55,
+                R.mipmap.gray_converted_sandclock_70,
+                R.mipmap.gray_converted_sandclock_85,
+                R.mipmap.gray_converted_sandclock_100,
+                R.mipmap.gray_converted_sandclock_broken
     };
 
 
@@ -55,6 +55,8 @@ public class ItemActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item);
+
+        // gather info to create the adapter
         if (savedInstanceState != null) {
             budgetItemName = savedInstanceState.getString(ITEM_NAME);
         } else {
@@ -65,9 +67,11 @@ public class ItemActivity extends AppCompatActivity {
         BudgetItem curItem = db.getBudgetItem(budgetItemName);
         BudgetLinesParser parser = new BudgetLinesParser(db.tblGetAllBudgetLines(curItem, null));
         aa = new ListViewItemAdapter(this, R.layout.budget_line, lv_allItems, parser, curItem, getNewLineListener(), getEveryItemLongClickListener());
+        lv_allItems.setAdapter(aa);
+        db.insertAdapter(aa);
 
 
-
+        // create the "load previous" button at top
         if (parser.moreInfoAtAllThenAtNonArchived()) { // if exist earlier lines
             final TextView tv_loadearlier_title = (TextView) findViewById(R.id.tv_itemactivity_loadearlier);
             tv_loadearlier_title.setVisibility(View.VISIBLE);
@@ -80,20 +84,13 @@ public class ItemActivity extends AppCompatActivity {
             });
         }
 
-        lv_allItems.setAdapter(aa);
-        db.insertAdapter(aa);
-
+        // manage the sandclock and the plus
+        findViewById(R.id.iv_itemactivity_sandclock_container).setOnClickListener(getNewLineListener());
         startSandClockAnimationIfNeeded();
+
     }
 
     private void startSandClockAnimationIfNeeded() {
-        BudgetItem curItem = db.getBudgetItem(budgetItemName);
-        float maxVal = curItem.getAuto_update_amount();
-        float curVal = curItem.getCur_value();
-        final float percentage = curVal / maxVal;
-        Log.d(TAG, "max: " + maxVal + ", cur: " + curVal + ", per: " + percentage);
-        if (curVal > maxVal) return; // we have nothing to do, leave it with the crown
-
         final ImageView iv_sandclock = (ImageView) findViewById(R.id.iv_itemactivity_sandclock_container);
         iv_sandclock.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,6 +109,15 @@ public class ItemActivity extends AppCompatActivity {
                         .start();
             }
         });
+
+        BudgetItem curItem = db.getBudgetItem(budgetItemName);
+        float maxVal = curItem.getAuto_update_amount();
+        float curVal = curItem.getCur_value();
+        final float percentage = curVal / maxVal;
+        Log.d(TAG, "max: " + maxVal + ", cur: " + curVal + ", per: " + percentage);
+        if (curVal > maxVal) return; // we have nothing to do, leave it with the crown
+
+
 
 
         new CountDownTimer(FRAME_CHANGE_DUR * SANDCLOCK_FRAMES.length, FRAME_CHANGE_DUR) {
@@ -168,6 +174,7 @@ public class ItemActivity extends AppCompatActivity {
 
         else if (id == R.id.action_item_clear) {
             db.clearBudgetItem(db.getBudgetItem(budgetItemName));
+            startSandClockAnimationIfNeeded();
             return true;
         }
 
@@ -260,7 +267,7 @@ public class ItemActivity extends AppCompatActivity {
                 final CharSequence[] options = {"edit", "DELETE"};
 
                 new AlertDialog.Builder(context)
-                        .setTitle(line.getTitle())
+                        .setTitle("Line: " + line.getTitle())
                         .setItems(options, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
