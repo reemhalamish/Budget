@@ -4,6 +4,10 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
     </style>
+    <style name="BudgetAppDialog" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
     <style name="main_multiselect_button">
         <item name="android:layout_width">@dimen/activity_main_mode_multi_select_button_size</item>
         <item name="android:layout_height">@dimen/activity_main_mode_multi_select_button_size</item>

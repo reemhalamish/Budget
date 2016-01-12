@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/selected" android:oneshot="false">
+
+    <item android:drawable="@mipmap/converted_sandclock_0" android:duration="200" />
+    <item android:drawable="@mipmap/converted_sandclock_10" android:duration="200" />
+    <item android:drawable="@mipmap/converted_sandclock_25" android:duration="200" />
+    <item android:drawable="@mipmap/converted_sandclock_40" android:duration="200" />
+    <item android:drawable="@mipmap/converted_sandclock_55" android:duration="200" />
+    <item android:drawable="@mipmap/converted_sandclock_70" android:duration="200" />
+    <item android:drawable="@mipmap/converted_sandclock_85" android:duration="200" />
+    <item android:drawable="@mipmap/converted_sandclock_100" android:duration="200" />
+    <item android:drawable="@mipmap/converted_sandclock_broken" android:duration="200" />
+</animation-list>

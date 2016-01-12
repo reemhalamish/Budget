@@ -1,7 +1,7 @@
-package halamish.reem.budget;
+package halamish.reem.budget.main;
 
 import android.animation.LayoutTransition;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,13 +21,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import halamish.reem.budget.item.ItemActivity;
+import halamish.reem.budget.R;
 import halamish.reem.budget.data.BudgetItem;
 import halamish.reem.budget.data.BudgetLine;
 import halamish.reem.budget.data.DatabaseHandler;
+import halamish.reem.budget.utils;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "main";
-    private static final String REPORT_FILE_NAME = "budget_report.txt";
+    private static final String REPORT_FILE_ROOT_FOLDER = "Budget";
+    private static final String REPORT_FILE_NAME = "budget_report";
+    private static final String REPORT_FILE_EXT = ".csv";
     private static final int ADD_ITEM_REQUEST = 1;
     private static final int EDIT_ITEM_REQUEST = 2;
     private static final long ANIMATE_CHANGES_DUR = 300;
@@ -199,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent gotoItem = new Intent(MainActivity.this, ItemActivity.class);
-                gotoItem.putExtra("item_name", (String) view.getTag(R.id.TAG_BUDGETITEM_NAME));
+                gotoItem.putExtra("item_name", (String) view.getTag(R.id.TAG_BUDGET_ITEM_NAME));
                 MainActivity.this.startActivity(gotoItem);
             }
         };
@@ -210,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String itemName = (String) view.getTag(R.id.TAG_BUDGETITEM_NAME);
+                String itemName = (String) view.getTag(R.id.TAG_BUDGET_ITEM_NAME);
                 MainActivityMultiSelectHandler.getInstance().updateButtons(view);
                 aa.notifyDataSetChanged();
             }
@@ -224,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onLongClick(View view) {
                 multiSelectHandler.startMultiSelect(true);
 
-                final String itemName = (String) view.getTag(R.id.TAG_BUDGETITEM_NAME);
+                final String itemName = (String) view.getTag(R.id.TAG_BUDGET_ITEM_NAME);
                 multiSelectHandler.updateButtons(view);
                 return true;
 //                if (1==1) {return true;} //
@@ -308,9 +313,9 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    protected void finishLongPress() {
-        aa.endMultiSelect();
-    }
+//    protected void finishLongPress() {
+//        aa.endMultiSelect();
+//    }
 
     /**
      * Dispatch incoming result to the correct fragment.
@@ -339,28 +344,58 @@ public class MainActivity extends AppCompatActivity {
     public void generateReportOnSD(){
         try
         {
-            File root = new File(Environment.getExternalStorageDirectory(), "Budget_myapp");
+            File root = new File(Environment.getExternalStorageDirectory(), REPORT_FILE_ROOT_FOLDER);
             if (!root.exists()) {
                 root.mkdirs();
             }
-            File gpxfile = new File(root, REPORT_FILE_NAME);
-            FileWriter writer = new FileWriter(gpxfile);
+            String newDirectoryName = utils.getToday() + "_" + REPORT_FILE_NAME;
+            File todaysDirectory = new File(root, newDirectoryName);
+            int copy_index = 0;
+            while (todaysDirectory.exists()) {
+                String copyDirectoryName = newDirectoryName + "_" + copy_index;
+                todaysDirectory = new File(root, copyDirectoryName);
+                copy_index += 1;
+            }
+            todaysDirectory.mkdirs(); // since I know it doesn't exists
+
+            String mainFileName = "_main_" + REPORT_FILE_NAME + REPORT_FILE_EXT;
+            File mainReportFile = new File(todaysDirectory, mainFileName);
+            FileWriter mainWriter = new FileWriter(mainReportFile);
+            String reportLine = "id, name, adding_every, auto_amount, cur_value\n";
+            mainWriter.append(reportLine);
+
             List<BudgetItem> allItems = db.getAllBudgetItems(null);
             for (BudgetItem item : allItems) {
-                String reportLine = "id: " + item.getId() + ", name: " + item.getName() + ", adding_every: " + item.getAuto_update() + ", auto_amount: " + item.getAuto_update_amount() + ", cur_value: " + item.getCur_value() + "\n";
-                writer.append(reportLine);
-                writer.append("History:\n");
-                for (BudgetLine line : db.tblGetAllBudgetLines(item, null)) {
-                    reportLine = "line_id: " + line.getId() + ", amount: " + line.getAmount() + ", title: " + line.getTitle() + ", details: " + line.getDetails() + ", date: " + line.getDate() + "\n";
-                    writer.append(reportLine);
-                }
+                reportLine =
+                    item.getId() + ", " +
+                    item.getName() + ", " +
+                    item.getAuto_update() + ", " +
+                    item.getAuto_update_amount() + ", " +
+                    item.getCur_value() + "\n";
+                mainWriter.append(reportLine);
 
-                writer.append("\n");
+                String itemFileName = REPORT_FILE_NAME + "_" + item.getName() + REPORT_FILE_EXT;
+                File itemReportFile = new File(todaysDirectory, itemFileName);
+                FileWriter itemWriter = new FileWriter(itemReportFile);
+                reportLine = "line_id, amount, type, title, details, date\n";
+                itemWriter.append(reportLine);
+                for (BudgetLine line : db.tblGetAllBudgetLines(item, null)) {
+                    reportLine =
+                            line.getId() + "," +
+                            line.getAmount() + "," +
+                            line.getEventType() + "," +
+                            line.getTitle() + "," +
+                            line.getDetails() + "," +
+                            line.getDate() + "\n";
+                    itemWriter.append(reportLine);
+                }
+                itemWriter.flush();
+                itemWriter.close();
             }
 
-            writer.flush();
-            writer.close();
-            Toast.makeText(this, "Saved file " + REPORT_FILE_NAME, Toast.LENGTH_SHORT).show();
+            mainWriter.flush();
+            mainWriter.close();
+            Toast.makeText(this, "Saved under folder: " + todaysDirectory.getAbsolutePath(), Toast.LENGTH_LONG).show();
         }
         catch(IOException e)
         {

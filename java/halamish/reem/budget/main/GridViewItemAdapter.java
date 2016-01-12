@@ -1,4 +1,4 @@
-package halamish.reem.budget;
+package halamish.reem.budget.main;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import halamish.reem.budget.MyAdapter;
+import halamish.reem.budget.R;
 import halamish.reem.budget.data.BudgetItem;
 import halamish.reem.budget.data.DatabaseHandler;
 
@@ -20,6 +22,7 @@ import halamish.reem.budget.data.DatabaseHandler;
  */
 public class GridViewItemAdapter extends MyAdapter<BudgetItem> {
     private static String TAG = "GridAdapter";
+    private final LayoutInflater inflater;
 
 
     private List<BudgetItem> allItems;
@@ -42,21 +45,18 @@ public class GridViewItemAdapter extends MyAdapter<BudgetItem> {
         this.everyViewMultiSelectListener = everyViewMultiSelectListener;
         this.newItemListener = newItemListener;
         this.multiSelectHandler = MainActivityMultiSelectHandler.getInstance();
+        inflater = LayoutInflater.from(getContext());
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (position >= allItems.size()) {
-            return createViewForAdd(convertView, parent);
-        }
-
-
         View view = convertView;
         if (view == null) { // create the view from scratch (else - view exists, just update)
-            LayoutInflater inflater = LayoutInflater.from(getContext());
             view = inflater.inflate(R.layout.budget_item, parent, false);
         }
-
+        if (position >= allItems.size()) {
+            return createViewForAdd(view, parent);
+        }
         //listeners
         if (_multiSelectMode) {
             view.setOnClickListener(everyViewMultiSelectListener);
@@ -92,18 +92,14 @@ public class GridViewItemAdapter extends MyAdapter<BudgetItem> {
             view.setBackgroundResource(R.drawable.grid_view_tile_back);
         }
 
-        view.setTag(R.id.TAG_BUDGETITEM_NAME, curItem.getName());
+        view.setTag(R.id.TAG_BUDGET_ITEM_NAME, curItem.getName());
 //        view.setTag(VIEW_TAG_POS, position);
 
         return view;
     }
 
-    private View createViewForAdd(View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) { // create the view from scratch (else - view exists, just update)
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            view = inflater.inflate(R.layout.budget_item, parent, false);
-        }
+    private View createViewForAdd(View nonNullConvertView, ViewGroup parent) {
+        View view = nonNullConvertView; // as sent from getView after inflate() has been called
 
         view.setOnClickListener(newItemListener);
 
@@ -113,9 +109,9 @@ public class GridViewItemAdapter extends MyAdapter<BudgetItem> {
 
         txtTitle.setText("Add new?");
         txtTitle.setTextColor(Color.BLUE);
+        txtAmount.setText("");
         hiddenVi.setVisibility(View.GONE);
 
-        txtAmount.setText("");
 
         return view;
     }

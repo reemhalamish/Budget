@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -25,7 +26,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 6;
+    // version 4: added column MA_KEY_ORDER_ID
+    // version 5: added column RE_KEY_EVENT_TYPE and switched column RE_KEY_DATE to INTEGER
+    // version 6: column MA_KEY_CUR_VALUE only stores values from non-Archived lines
 
     // Database Name
     private static final String DATABASE_NAME = "budget";
@@ -47,14 +51,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String RE_KEY_DATE = "date";
     private static final String RE_KEY_ID = "re_id";
     private static final String RE_KEY_AMOUNT = "amount";
+    private static final String RE_KEY_EVENT_TYPE = "type"; // 0. change auto-update 1. user input  2. archive ends here
 
 
-    private static List<MyAdapter> handlers;
+    private static List<MyAdapter> adapters;
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        if (handlers == null)
-            handlers = new ArrayList<>();
+        if (adapters == null)
+            adapters = new ArrayList<>();
     }
 
     @Override
@@ -85,6 +90,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
         for (BudgetItem item : open_items) {
             addBudgetItem(item, db);
+//            updateFromOutside(item.getName(), item_to_lines.get(item), db);
             tblAddAllBudgetLines(item, item_to_lines.get(item), db);
         }
     }
@@ -117,8 +123,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * 1. inits the amount of budget inside every item based on the sum of the lines
      */
     public void init() {
-        _dbUpdateAllItemsCurAmount();
-        notifyAdapters();
+//        _dbUpdateAllItemsCurAmount();
+//        notifyAdapters();
     }
 
     private void _dbUpdateAllItemsCurAmount() {
@@ -158,7 +164,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //                    line.setId(Integer.parseInt(cursor.getString(0)));
 //                    line.setTitle(cursor.getString(1));
 //                    line.setDetails(cursor.getString(2));
-                    curAmount += Integer.parseInt(cursor.getString(3));
+                    curAmount += cursor.getInt(3);
 //                    line.setDate(cursor.getString(4));
                 } while (cursor.moveToNext());
             }
@@ -201,10 +207,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         addBudgetItem(item, db);
 
         BudgetLine firstLine = new BudgetLine(
-                "Budget " + item.getName() + " created!",
+                "Budget created!",
                 "automatic",
                 item.getAuto_update_amount(),
-                utils.getToday()
+                utils.getMillisecondNow(),
+                BudgetLine.BudgetLineEventType.BUDGET_CREATED
         );
 
         tblAddBudgetLineActual(item, firstLine, db);
@@ -274,12 +281,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             cursor.moveToFirst();
             // return item
             retval = new BudgetItem(
-                    Integer.parseInt(cursor.getString(0)),
+                    cursor.getInt(0),
                     cursor.getString(1),
-                    Integer.parseInt(cursor.getString(2)),
+                    cursor.getInt(2),
                     cursor.getString(3),
-                    Integer.parseInt(cursor.getString(4)),
-                    Integer.parseInt(cursor.getString(5))
+                    cursor.getInt(4),
+                    cursor.getInt(5)
             );
             cursor.close();
             if (!externalDB)
@@ -376,7 +383,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.update(TABLE_ALL_TALBES, values, MA_KEY_NAME + " = ?",
                 new String[]{item.getName()});
 
-        notifyAdapters();
+
         if (!externalDB)
             db.close();
     }
@@ -541,12 +548,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     RE_KEY_TITLE + " TEXT," +
                     RE_KEY_DETAILS + " TEXT," +
                     RE_KEY_AMOUNT + " INTEGER," +
-                    RE_KEY_DATE +  " TEXT" +
+                    RE_KEY_DATE +  " INTEGER," +
+                    RE_KEY_EVENT_TYPE + " INTEGER" +
                     ")";
         db.execSQL(CREATE_BUDGET_TABLE);
-
-
-
     }
 
     private void tblDeleteTable(BudgetItem item, SQLiteDatabase db) {
@@ -565,6 +570,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(RE_KEY_DETAILS, line.getDetails());
         values.put(RE_KEY_AMOUNT, line.getAmount());
         values.put(RE_KEY_DATE, line.getDate());
+        values.put(RE_KEY_EVENT_TYPE, line.getEventType().toInt());
 
         // Inserting row to the relevant table
         db.insert(item.getName(), null, values);
@@ -581,7 +587,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         tblAddBudgetLineActual(item, line, db);
         db.close();
-
+        notifyAdapters();
     }
 
     //Adding multiple lines
@@ -623,7 +629,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         cursor.getString(1),
                         cursor.getString(2),
                         Integer.parseInt(cursor.getString(3)),
-                        cursor.getString(4));
+                        Long.parseLong(cursor.getString(4)),
+                    BudgetLine.BudgetLineEventType.getEnum(cursor.getString(5)));
 
                 // Adding item to list
             retval = line;
@@ -660,11 +667,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 BudgetLine line = new BudgetLine(
-                Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1),
-                cursor.getString(2),
-                Integer.parseInt(cursor.getString(3)),
-                cursor.getString(4));
+                    cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getInt(3),
+                    cursor.getLong(4),
+                    BudgetLine.BudgetLineEventType.getEnum(cursor.getInt(5))
+                );
 
                 // Adding item to list
                 budgetLines.add(line);
@@ -676,6 +685,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (!externalDB)
             db.close();
 
+        for (BudgetLine line : budgetLines) {
+            if (line.getTitle() == null) throw new AssertionError(line.getDetails());
+        }
         // return contact list
         return budgetLines;
     }
@@ -690,21 +702,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(RE_KEY_TITLE, line.getTitle());
         values.put(RE_KEY_DETAILS, line.getDetails());
         values.put(RE_KEY_AMOUNT, line.getAmount());
-        values.put(RE_KEY_DATE, line.getDate());
 
         // updating row
         int retval = db.update(item.getName(), values, RE_KEY_ID + " = ?",
-                new String[]{String.valueOf(item.getId())});
+                new String[]{String.valueOf(line.getId())});
 
 
         // updating the item
-        updateItemCurAmount(item, db);
+        if (!line.isArchived())
+            updateItemCurAmount(item, db); // curAmount only works with the nonArchived lines
 
 
         if (!externalDB)
             db.close();
 
-
+        Log.d(TAG, "adapters connected:");
+        for (MyAdapter adapter : adapters)
+            Log.d(TAG, adapter.toString());
         notifyAdapters();
         return retval;
     }
@@ -715,11 +729,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (! externalDB)
             db = this.getWritableDatabase();
 
-        db.delete(item.getName(), RE_KEY_ID + " = ?",
+        int retval = db.delete(item.getName(), RE_KEY_ID + " = ?",
                 new String[]{String.valueOf(line.getId())});
 
 
-        updateItemCurAmount(item, db);
+        retval += 0;
+        if (!line.isArchived())
+            updateItemCurAmount(item, db); // curAmount only works with the nonArchived lines
 
         if (!externalDB)
             db.close();
@@ -752,41 +768,65 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public int tblGetCurAmount(BudgetItem item, SQLiteDatabase db) {
-        int curAmount = 0;
-        for (BudgetLine line : tblGetAllBudgetLines(item, db)) {
-            curAmount += line.getAmount();
-        }
+        int curAmount = new BudgetLinesParser(tblGetAllBudgetLines(item, db)).getNonArchivedAmount();
+        Log.d(TAG, "at item " + item.getName() + ", curAmount is " + curAmount);
         return curAmount;
     }
 
     public void insertAdapter(MyAdapter adapter) {
-        handlers.add(adapter);
+        adapters.add(adapter);
     }
 
     public void removeAdapter(MyAdapter adapter) {
-        handlers.remove(adapter);
+        adapters.remove(adapter);
     }
 
     private void notifyAdapters() {
-        for (MyAdapter a : handlers) {
+        for (MyAdapter a : adapters) {
             a.updateAdapter();
         }
     }
 
-    public void updateFromOutside() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String add_col = "ALTER TABLE " + TABLE_ALL_TALBES + " ADD COLUMN " + MA_KEY_ORDER_ID + " INTEGER";
-        String insert_values = "UPDATE " + TABLE_ALL_TALBES + " SET " + MA_KEY_ORDER_ID + " = " + MA_KEY_ID;
-        db.execSQL(add_col);
-        db.execSQL(insert_values);
+    public void updateFromOutside(String itemTable, Collection<BudgetLine> lines , SQLiteDatabase db) {
+        for (BudgetLine line : lines) {
+            long milliseconds;
+//            try {
+//                Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(line.getDate());
+//                milliseconds = date.getTime();
+//            } catch (java.text.ParseException e) {
+                milliseconds = 0;
+//            }
+            int eventType = 1; // userInput
+            if (line.getTitle().toLowerCase().startsWith("budget")
+                || line.getTitle().toLowerCase().startsWith("monthly")
+                || line.getTitle().toLowerCase().startsWith("weekly"))
+                eventType = 0; // autoUpdate
+
+
+
+            ContentValues values = new ContentValues();
+            values.put(RE_KEY_TITLE, line.getTitle());
+            values.put(RE_KEY_DETAILS, line.getDetails());
+            values.put(RE_KEY_AMOUNT, line.getAmount());
+            values.put(RE_KEY_DATE, milliseconds);
+            values.put(RE_KEY_EVENT_TYPE, eventType);
+
+            // Inserting row to the relevant table
+            db.insert(itemTable, null, values);
+        }
+//        String add_col = "ALTER TABLE " + tableName + " ADD COLUMN " + RE_KEY_EVENT_TYPE + " INTEGER";
+//        db.execSQL(add_col);
+
+//        String insert_values = "UPDATE " + tableName + " SET " + RE_KEY_EVENT_TYPE + " = " + RE_KEY_AMOUNT;
+//        db.execSQL(insert_values);
     }
 
     /**
      *
      * @param db needs to be openeed! and not null!
-     * @return
+     * @return highest ID at TABLE_ALL_TABLES
      */
-    private int helper_getHighestID(SQLiteDatabase db) {
+    private int helper_getHighestID(@NonNull SQLiteDatabase db) {
         final String MY_QUERY = "SELECT MAX(" + MA_KEY_ID + ") FROM " + TABLE_ALL_TALBES;
         Cursor cur = db.rawQuery(MY_QUERY, null);
         cur.moveToFirst();

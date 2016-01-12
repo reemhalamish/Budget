@@ -1,6 +1,6 @@
-package halamish.reem.budget;
+package halamish.reem.budget.main;
 
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
@@ -13,6 +13,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import halamish.reem.budget.item.ItemActivity;
+import halamish.reem.budget.MyAdapter;
+import halamish.reem.budget.R;
 import halamish.reem.budget.data.DatabaseHandler;
 
 /**
@@ -77,7 +80,7 @@ public class MainActivityMultiSelectHandler {
      * @param newSelectedItem the item being selected
      */
     public void updateButtons(View newSelectedItem) {
-        String itemName = (String) newSelectedItem.getTag(R.id.TAG_BUDGETITEM_NAME);
+        String itemName = (String) newSelectedItem.getTag(R.id.TAG_BUDGET_ITEM_NAME);
         if (pressedBudgetItemsNames.contains(itemName)) {
             pressedBudgetItemsNames.remove(itemName);
         } else {
@@ -175,7 +178,7 @@ public class MainActivityMultiSelectHandler {
                     public void onClick(DialogInterface dialog, int which) {
                         Collection<String> toDelete = new HashSet<String>();
 //                        for (View item : pressedBudgetItemsNames)
-//                            toDelete.add((String) item.getTag(R.id.TAG_BUDGETITEM_NAME));
+//                            toDelete.add((String) item.getTag(R.id.TAG_BUDGET_ITEM_NAME));
                         db.deleteBudgetItems(pressedBudgetItemsNames, null);
                         pressedBudgetItemsNames = new HashSet<>();
                         atMultiSelectMode = false;

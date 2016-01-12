@@ -11,6 +11,7 @@ import java.util.Calendar;
 import halamish.reem.budget.data.BudgetItem;
 import halamish.reem.budget.data.BudgetLine;
 import halamish.reem.budget.data.DatabaseHandler;
+import halamish.reem.budget.main.MainActivityMultiSelectHandler;
 
 /**
  * Created by Re'em on 10/17/2015.
@@ -26,6 +27,7 @@ public class BudgetApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        utils.init();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(BudgetApp.this);
 
@@ -71,10 +73,11 @@ public class BudgetApp extends Application {
             for (int i = 0; i < monthsPassed; i++) {
                 for (BudgetItem item : db.getAllMonthlyUpdate()) {
                     BudgetLine newLine = new BudgetLine(
-                            "monthly add - " + (dispCal.get(Calendar.MONTH) + 1), // ranging 0-11, not 1-12
+                            "monthly add - " + utils.getMonth(dispCal.getTime()),
                             "automatic",
                             item.getAuto_update_amount(),
-                            formater.format(dispCal.getTime()));
+                            dispCal.getTime().getTime(),
+                            BudgetLine.BudgetLineEventType.AUTO_UPDATE);
                     db.tblAddBudgetLine(item, newLine);
                 }
                 dispCal.add(Calendar.MONTH, 1); // prepare for next month
@@ -88,10 +91,11 @@ public class BudgetApp extends Application {
             for (int i = 0; i < weeksPassed; i++) {
                 for (BudgetItem item : db.getAllWeeklyUpdate()) {
                     BudgetLine newLine = new BudgetLine(
-                            "weekly add - week No. " + dispCal.get(Calendar.WEEK_OF_YEAR),
+                            "weekly add (" + dispCal.get(Calendar.WEEK_OF_YEAR) + ")",
                             "automatic",
                             item.getAuto_update_amount(),
-                            formater.format(dispCal.getTime())
+                            dispCal.getTime().getTime(),
+                            BudgetLine.BudgetLineEventType.AUTO_UPDATE
                     );
                     db.tblAddBudgetLine(item, newLine);
                 }
@@ -107,6 +111,7 @@ public class BudgetApp extends Application {
     @Override
     public void onTerminate() {
         MainActivityMultiSelectHandler.getInstance().freeMemory();
+        utils.freeMemory();
         super.onTerminate();
     }
 }
@@ -116,6 +121,7 @@ public class BudgetApp extends Application {
 
 TODO:
 * add option to edit line on a long press, plus option to delete it
+* update the "create csv output" option to reflect all the info
 
 * visual design for line:
     show just two columns: number and an icon for each one of four (automattically\manually plus\minus)
@@ -143,4 +149,7 @@ TODO:
 ONEDAY
 when clicking the sum, it will open some nice animation of money and will show you some fancy graph
 
+the design of BudgetLineParsser will cause troubles when using long time - O(n)
+should go for a better design - add column "archived" in BudgetLine SQLite tables and ask only for archived\all
+(then the parser will need an access to the db itself?)
  */

@@ -11,4 +11,8 @@
     <string name="title_activity_add_item">AddItemActivity</string>
     <string name="action_choose_multiple">Select multiple items</string>
     <string name="action_item_clear">Clear item</string>
+    <string name="itemactivity_header_date">Date</string>
+    <string name="itemactivity_header_title">Title</string>
+    <string name="itemactivity_header_Amount">$$$</string>
+    <string name="itemactivity_loadearlier">Load archived lines...</string>
 </resources>
