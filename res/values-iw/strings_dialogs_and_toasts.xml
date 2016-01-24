@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_btn_action_edit">עריכה!</string>
+    <string name="dialog_btn_action_add">הוספה!</string>
+    <string name="dialog_options_edit">עריכה</string>
+    <string name="dialog_options_delete">מחיקה</string>
+    <string name="title_delete_multiple">אישור מחיקת פריטים מרובים</string>
+    <string name="title_delete_confirm">אישור מחיקה</string>
+    <string name="title_empty_line">שורה ריקה</string>
+    <string name="title_details">" פרטים:"</string>
+    <string name="title_add_new">בא לך להוסיף חדש?</string>
+    <string name="msg_delete_confirm">האם ברצונך למחוק?</string>
+    <string name="msg_delete_cant_be_undone">מחיקה לא ניתנת לשחזור!</string>
+    <string name="msg_saved_under_folder">הדוח נשמר בתיקייה</string>
+    <string name="msg_item_success_edit">הפריט נערך בהצלחה!</string>
+    <string name="msg_item_success_add">הפריט נוסף בהצלחה!</string>
+    <string name="msg_delete_are_you_sure">האם ברצונך למחוק?</string>
+    <string name="msg_line_success_edit">השורה נערכה!</string>
+    <string name="msg_line_success_add">השורה נוספה!</string>
+    <string name="msg_line">"שורה: "</string>
+</resources>

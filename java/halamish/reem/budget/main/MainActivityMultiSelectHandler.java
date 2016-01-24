@@ -27,7 +27,7 @@ public class MainActivityMultiSelectHandler {
     private static final String TAG = "MultiSelectHandler";
 
     // private data needed for running
-    private static MainActivityMultiSelectHandler instnace;
+    private static MainActivityMultiSelectHandler s_instnace;
     private boolean atMultiSelectMode = false;
 
     // db and related
@@ -42,9 +42,9 @@ public class MainActivityMultiSelectHandler {
 
     private MainActivityMultiSelectHandler() {}
     public static MainActivityMultiSelectHandler getInstance() {
-        if (instnace == null)
-            instnace = new MainActivityMultiSelectHandler();
-        return instnace;
+        if (s_instnace == null)
+            s_instnace = new MainActivityMultiSelectHandler();
+        return s_instnace;
     }
     public void init(DatabaseHandler db){
         this.db = db;
@@ -164,17 +164,17 @@ public class MainActivityMultiSelectHandler {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String msg = "sure to DELETE?\n";
+                String msg = context.getString(R.string.msg_delete_confirm) + "\n";
                 for (String item : pressedBudgetItemsNames) {
                     msg = msg + "\n" + item;
                 }
-                msg = msg + "\n\nthe deletion can't be undone!";
+                msg = msg + "\n\n" + context.getString(R.string.msg_delete_cant_be_undone);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Confirm deleting multiple items");
+                builder.setTitle(context.getString(R.string.title_delete_multiple));
                 builder.setMessage(msg);
                 builder.setCancelable(true);
-                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(context.getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Collection<String> toDelete = new HashSet<String>();
 //                        for (View item : pressedBudgetItemsNames)
@@ -187,7 +187,7 @@ public class MainActivityMultiSelectHandler {
                     }
                 });
 
-                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(context.getString(R.string.no), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
@@ -266,7 +266,7 @@ public class MainActivityMultiSelectHandler {
         multi_swap = null;
         multi_delete = null;
         multi_edit = null;
-        instnace = null;
+        s_instnace = null;
     }
 
     public String getFirstItemFromPressed() {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="db_budget_created">Budget created!</string>
+    <string name="db_cleared_as_user_requested">cleared as the user requested</string>
+    <string name="db_automatic">automatic</string>
+    <string name="budgetitem_weekly">weekly</string>
+    <string name="budgetitem_monthly">monthly</string>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ok">סבבה, הבנתי</string>
+    <string name="yes">כן</string>
+    <string name="no">לא</string>
+    <string name="misc_updated">"מעודכן באופן "</string>
+    <string name="misc_updateweekly_for_amountofmoney">עם</string>
+    <string name="misc_current_amount">יתרה נוכחית</string>
+    <string name="misc_currency">שקל</string>
+</resources>

@@ -21,12 +21,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import halamish.reem.budget.Settings;
+import halamish.reem.budget.SettingsActivity;
 import halamish.reem.budget.item.ItemActivity;
 import halamish.reem.budget.R;
 import halamish.reem.budget.data.BudgetItem;
 import halamish.reem.budget.data.BudgetLine;
 import halamish.reem.budget.data.DatabaseHandler;
-import halamish.reem.budget.utils;
+import halamish.reem.budget.Utils;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "main";
@@ -41,11 +43,19 @@ public class MainActivity extends AppCompatActivity {
     private GridViewItemAdapter aa;
     private DatabaseHandler db;
     private MainActivityMultiSelectHandler multiSelectHandler;
+    private boolean needToForceReload = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent gotHereByIntent = getIntent();
+        if (gotHereByIntent.getBooleanExtra(SettingsActivity.SHUTDOWN_THE_APP_EXTRA, false)) {
+            finish();
+            System.exit(0);
+            return;
+        }
+        Settings.getInstance().updateLocal(); // BEFORE setting the content view
         setContentView(R.layout.activity_main);
         gv_all_items = (GridView) findViewById(R.id.gv_main_all_items);
         db = new DatabaseHandler(this);
@@ -144,14 +154,19 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onResume() {
+        if (needToForceReload) { // happens when changing locale
+            needToForceReload = false;
+            forceReload();
+        }
         aa.notifyDataSetChanged();
         super.onResume();
     }
 
     @Override
     protected void onDestroy() {
+        if (db != null)
+            db.removeAdapter(aa);
         super.onDestroy();
-        db.removeAdapter(aa);
     }
 
     @Override
@@ -168,22 +183,10 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.action_choose_multiple) {
+        if (id == R.id.action_choose_multiple && !multiSelectHandler.isAtMultiSelectMode()) {
             aa.startMultiSelect();
             multiSelectHandler.startMultiSelect(true);
-            // TODO:
-            /*
-            ONEDAY disable and delete the "add new" item with motion
-            change the shortPressListener of items to be selected (maybe changed color, maybe "v")
-            options:
-               (on 0 selected - normal plus  ???)
-                on 1 selected - delete, edit, duplicate
-                on 2 selected - delete, swap
-                on 3+selected - delete
-
-            make a function that will return the plus and the "add new" back at the end of action
-             */
-            Toast.makeText(this, "NOT READY YET", Toast.LENGTH_SHORT);
+            // TODO: add clear option, make the buttons smaller
         }
 
         if (id == R.id.action_report) {
@@ -193,6 +196,8 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            needToForceReload = true;
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
@@ -272,17 +277,17 @@ public class MainActivity extends AppCompatActivity {
 
             private void createDeleteDialog(final String budgetItemName) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-                builder.setTitle("Confirm deleting " + budgetItemName);
-                builder.setMessage("sure to DELETE?");
+                builder.setTitle(getString(R.string.title_delete_confirm) + ' ' + budgetItemName);
+                builder.setMessage(getString(R.string.msg_delete_are_you_sure));
                 builder.setCancelable(true);
-                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         db.deleteBudgetItem(db.getBudgetItem(budgetItemName), null);
                         dialog.dismiss();
                     }
                 });
 
-                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
@@ -328,12 +333,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ADD_ITEM_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Toast.makeText(this, "item added succefully!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.msg_item_success_add, Toast.LENGTH_SHORT).show();
                 aa.notifyDataSetChanged();
             }
         } else if (requestCode == EDIT_ITEM_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Toast.makeText(this, "item edited succefully!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.msg_item_success_edit, Toast.LENGTH_SHORT).show();
                 aa.notifyDataSetChanged();
             }
         } else {
@@ -348,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
             if (!root.exists()) {
                 root.mkdirs();
             }
-            String newDirectoryName = utils.getToday() + "_" + REPORT_FILE_NAME;
+            String newDirectoryName = Utils.getToday() + "_" + REPORT_FILE_NAME;
             File todaysDirectory = new File(root, newDirectoryName);
             int copy_index = 0;
             while (todaysDirectory.exists()) {
@@ -358,10 +363,10 @@ public class MainActivity extends AppCompatActivity {
             }
             todaysDirectory.mkdirs(); // since I know it doesn't exists
 
-            String mainFileName = "_main_" + REPORT_FILE_NAME + REPORT_FILE_EXT;
+            String mainFileName = getString(R.string.report_filename_main) + REPORT_FILE_NAME + REPORT_FILE_EXT;
             File mainReportFile = new File(todaysDirectory, mainFileName);
             FileWriter mainWriter = new FileWriter(mainReportFile);
-            String reportLine = "id, name, adding_every, auto_amount, cur_value\n";
+            String reportLine = getString(R.string.report_header_budgetitem) + "\n";
             mainWriter.append(reportLine);
 
             List<BudgetItem> allItems = db.getAllBudgetItems(null);
@@ -369,7 +374,7 @@ public class MainActivity extends AppCompatActivity {
                 reportLine =
                     item.getId() + ", " +
                     item.getName() + ", " +
-                    item.getAuto_update() + ", " +
+                    item.getLocalizedAuto_update(this) + ", " +
                     item.getAuto_update_amount() + ", " +
                     item.getCur_value() + "\n";
                 mainWriter.append(reportLine);
@@ -377,7 +382,7 @@ public class MainActivity extends AppCompatActivity {
                 String itemFileName = REPORT_FILE_NAME + "_" + item.getName() + REPORT_FILE_EXT;
                 File itemReportFile = new File(todaysDirectory, itemFileName);
                 FileWriter itemWriter = new FileWriter(itemReportFile);
-                reportLine = "line_id, amount, type, title, details, date\n";
+                reportLine = getString(R.string.report_header_budgetline) + "\n";
                 itemWriter.append(reportLine);
                 for (BudgetLine line : db.tblGetAllBudgetLines(item, null)) {
                     reportLine =
@@ -395,13 +400,17 @@ public class MainActivity extends AppCompatActivity {
 
             mainWriter.flush();
             mainWriter.close();
-            Toast.makeText(this, "Saved under folder: " + todaysDirectory.getAbsolutePath(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.msg_saved_under_folder)+ ": " + todaysDirectory.getAbsolutePath(), Toast.LENGTH_LONG).show();
         }
         catch(IOException e)
         {
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
         }
+    }
+    private void forceReload() {
+        finish();
+        startActivity(getIntent());
     }
 
 }

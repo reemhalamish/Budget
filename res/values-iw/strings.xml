@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--<string name="app_name">תקציב</string>-->
+
+    <!--<string name="title_activity_settings">הגדרות</string>-->
+    <!--<string name="settings_keep_last_balance_cbx">העברת יתרה אוטומטית מחודש לחודש</string>-->
+    <!--<string name="settings_title_budget_related">דברים שקשורים לתקציב:</string>-->
+    <!--<string name="settings_qmark">סימן שאלה</string>-->
+    <!--<string name="settings_toast_balance_saved">מעכשיו והלאה, מה שנשאר לכם מהתקציב בסוף החודש יתווסף אוטומטית לתקציב החדש בחודש הבא</string>-->
+    <!--<string name="settings_toast_balance_reset">מעכשיו והלאה, בסוף חודש התקציב יתאפס לקראת החודש הבא</string>-->
+    <!--<string name="settings_explanation_keep_balance">אם תסמנו וי, בסוף כל חודש יתרת התקציב תתווסף לחודש הבא.\nאם לא יהיה וי, בסוף כל חודש יתרת התקציב תתאפס.</string>-->
+    <!--<string name="settings_warn_changes_now_on">שינויים כאן ישפיעו רק על התנהגות האפליקציה מכאן והלאה</string>-->
+    <!--<string name="settings_language">שפה</string>-->
+    <!--<string name="settings_language_hint">רוב הדברים ישתנו, אבל יש סיכוי שתצטרכו לסגור את האפליקציה ולפתוח מחדש כדי לשנות את השפה לגמרי</string>-->
+
+    <string name="misc_inner_info_id_is">מידע פנימי: מספר מזהה</string>
+    <string name="settings_brn_close_app">לסגירת האפליקציה</string>
+</resources>

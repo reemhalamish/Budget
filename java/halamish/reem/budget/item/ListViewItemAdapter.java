@@ -2,7 +2,6 @@ package halamish.reem.budget.item;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,7 @@ import halamish.reem.budget.data.BudgetItem;
 import halamish.reem.budget.data.BudgetLine;
 import halamish.reem.budget.data.BudgetLinesParser;
 import halamish.reem.budget.data.DatabaseHandler;
-import halamish.reem.budget.utils;
+import halamish.reem.budget.Utils;
 
 /**
  * Created by Re'em on 10/17/2015.
@@ -96,8 +95,6 @@ public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
 //        }
 
 
-//        view.findViewById(R.id.iv_line_separator).setBackgroundColor(Color.DKGRAY);
-// TODO retrn this ^ maybe
 
         // TODO add listener that will open line with all details
         BudgetLine curLine = allItems.get(position);
@@ -111,7 +108,7 @@ public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
 
         txtTitle.setText(curLine.getTitle());
         txtAmount.setText(String.valueOf(curLine.getAmount()));
-        txtDate.setText(utils.millisecToDate(curLine.getDate()));
+        txtDate.setText(Utils.millisecToDate(curLine.getDate()));
 //        txtDetails.setText(curLine.getDetails());
 //        txtEventType.setText(curLine.getEventType().name());
 
@@ -192,21 +189,20 @@ public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
             newItems = parser.getNonArchived();
         else
             newItems = parser.getAll();
-
-        Log.d(TAG, "list got: (length " + newItems.size() + ")");
-
-
-        Log.d(TAG, "list size(1): " + newItems.size());
-
         clear();
-        Log.d(TAG, "list size(2): " + newItems.size());
-
         addAll(newItems);
-        Log.d(TAG, "list size(3): " + newItems.size());
         this.allItems = newItems;
         notifyDataSetChanged();
-        Log.d(TAG, "lv_allItems size(4): " + allItems.size());
-
-
     }
 }
+
+/*
+TODO:
+
+ add first row in adapter ("load archived") that will look better then just gray
+
+ somehow insert details inside (maybe at landscape?)
+
+ make the sandclock and the plus look nice together (change the plus to gray-scale? colorize the sandclock?)
+
+ */

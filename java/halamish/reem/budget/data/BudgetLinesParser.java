@@ -2,8 +2,6 @@ package halamish.reem.budget.data;
 
 import java.util.LinkedList;
 import java.util.List;
-// TODO init instance at the adapter and use this
-// TODO add first row in adapter ("load archived") that will show them grey
 /**
  * Created by Re'em on 1/6/2016.
  */

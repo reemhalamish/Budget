@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_settings">Settings</string>
+
+
+    <string name="settings_keep_last_balance_cbx">Keep last balance to new month\\week</string>
+    <string name="settings_title_budget_related">Budget related:</string>
+    <string name="settings_qmark">question_mark</string>
+    <string name="settings_toast_balance_saved">From now on, Balance from last month will be added to the next month</string>
+    <string name="settings_toast_balance_reset">From now on, New month will wipe out the previous month\'s balance</string>
+    <string name="settings_explanation_keep_balance">When checked, current balance will be added to the next month budget.\nWhen un-checked, at every 1st to the month budget-items will reset to their default amount.</string>
+    <string name="settings_warn_changes_now_on">please Notice - Changes here will only take effect FROM NOW ON</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_hint">Most of the language changes will take effect immediately, you may need to restart the app for full effect</string>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Budget</string>
+    <string name="app_autoupdate_weeklyadd">Weekly Add</string>
+    <string name="app_autoupdate_monthlyadd">monthly add</string>
+    <string name="app_autoupdate_details_automatic">automatic</string>
+    <string name="app_autoupdate_fromlast_week">Balance From Previous Week</string>
+    <string name="app_autoupdate_fromlast_month">Balance From Previous Month</string>
+    <string name="app_autoupdate_fromlast_details">change behaviour via Settings</string>
+	
+    <string name="report_header_budgetline">line_id, amount, type, title, details, date</string>
+    <string name="report_header_budgetitem">id, name, adding_every, auto_amount, cur_value</string>
+    <string name="report_filename_main">_main_</string>
+</resources>

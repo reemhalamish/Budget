@@ -45,10 +45,10 @@ public class MessWithItemDialog extends Activity {
             edt_amount.setText(String.valueOf(oldItem.getAuto_update_amount()));
             edt_title.setText(oldItem.getName());
             cbx_monthly_weekly.setChecked(oldItem.getAuto_update().equals(BudgetItem.MONTHLY));
-            btn_action.setText("Edit!");
+            btn_action.setText(R.string.dialog_btn_action_edit);
         } else {
             oldItem = null;
-            btn_action.setText("Add!");
+            btn_action.setText(R.string.dialog_btn_action_add);
         }
 
         btn_action.setOnClickListener(new View.OnClickListener() {

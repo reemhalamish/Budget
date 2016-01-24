@@ -14,7 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import halamish.reem.budget.MyAdapter;
-import halamish.reem.budget.utils;
+import halamish.reem.budget.R;
+import halamish.reem.budget.Utils;
 
 /**
  * Created by Re'em on 10/17/2015.
@@ -24,12 +25,15 @@ import halamish.reem.budget.utils;
 public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHandler";
 
+    private static boolean dbIsReady = false;
+
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     // version 4: added column MA_KEY_ORDER_ID
     // version 5: added column RE_KEY_EVENT_TYPE and switched column RE_KEY_DATE to INTEGER
     // version 6: column MA_KEY_CUR_VALUE only stores values from non-Archived lines
+    // version 7: after every AUTO_UPDATE budget line there is MOVER_FROM_LAST budget line
 
     // Database Name
     private static final String DATABASE_NAME = "budget";
@@ -54,12 +58,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String RE_KEY_EVENT_TYPE = "type"; // 0. change auto-update 1. user input  2. archive ends here
 
 
-    private static List<MyAdapter> adapters;
+    private static List<MyAdapter> s_adapters;
+    private Context context;
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        if (adapters == null)
-            adapters = new ArrayList<>();
+        if (s_adapters == null)
+            s_adapters = new ArrayList<>();
+        this.context = context;
     }
 
     @Override
@@ -90,7 +96,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
         for (BudgetItem item : open_items) {
             addBudgetItem(item, db);
-//            updateFromOutside(item.getName(), item_to_lines.get(item), db);
+//            updateFromOutside(item, item_to_lines.get(item), db);
             tblAddAllBudgetLines(item, item_to_lines.get(item), db);
         }
     }
@@ -207,10 +213,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         addBudgetItem(item, db);
 
         BudgetLine firstLine = new BudgetLine(
-                "Budget created!",
-                "automatic",
+                context.getString(R.string.db_budget_created),
+                context.getString(R.string.db_automatic),
                 item.getAuto_update_amount(),
-                utils.getMillisecondNow(),
+                Utils.getMillisecondNow(),
                 BudgetLine.BudgetLineEventType.BUDGET_CREATED
         );
 
@@ -432,7 +438,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //        BudgetLine header = tblGetBudgetItemHeaderLine(item, db);
         tblDeleteTable(item, db);
         tblCreateTable(item, db);
-        BudgetLine clearedHeader = new BudgetLine("Budget created!", "cleared as the user requested", item.getAuto_update_amount(), utils.getMillisecondNow(), BudgetLine.BudgetLineEventType.BUDGET_CREATED);
+        BudgetLine clearedHeader = new BudgetLine(context.getString(R.string.db_budget_created), context.getString(R.string.db_cleared_as_user_requested), item.getAuto_update_amount(), Utils.getMillisecondNow(), BudgetLine.BudgetLineEventType.BUDGET_CREATED);
         tblAddBudgetLineActual(item, clearedHeader, db);
 
         db.close();
@@ -718,7 +724,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             db.close();
 
         Log.d(TAG, "adapters connected:");
-        for (MyAdapter adapter : adapters)
+        for (MyAdapter adapter : s_adapters)
             Log.d(TAG, adapter.toString());
         notifyAdapters();
         return retval;
@@ -775,51 +781,79 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public void insertAdapter(MyAdapter adapter) {
-        adapters.add(adapter);
+        s_adapters.add(adapter);
     }
 
     public void removeAdapter(MyAdapter adapter) {
-        adapters.remove(adapter);
+        s_adapters.remove(adapter);
     }
 
     private void notifyAdapters() {
-        for (MyAdapter a : adapters) {
+        for (MyAdapter a : s_adapters) {
             a.updateAdapter();
         }
     }
 
-    public void updateFromOutside(String itemTable, Collection<BudgetLine> lines , SQLiteDatabase db) {
+    public void updateFromOutside(BudgetItem item, Collection<BudgetLine> lines , SQLiteDatabase db) {
+        String itemTable = item.getName();
+        int lastValue = 0;
         for (BudgetLine line : lines) {
-            long milliseconds;
-//            try {
-//                Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(line.getDate());
-//                milliseconds = date.getTime();
-//            } catch (java.text.ParseException e) {
-                milliseconds = 0;
-//            }
-            int eventType = 1; // userInput
-            if (line.getTitle().toLowerCase().startsWith("budget")
-                || line.getTitle().toLowerCase().startsWith("monthly")
-                || line.getTitle().toLowerCase().startsWith("weekly"))
-                eventType = 0; // autoUpdate
+            if (line.getTitle().toLowerCase().startsWith("budget")) {
+                tblDeleteTable(item, db);
+                tblCreateTable(item, db);
+            }
+//            long milliseconds;
+////            try {
+////                Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(line.getDate());
+////                milliseconds = date.getTime();
+////            } catch (java.text.ParseException e) {
+//                milliseconds = 0;
+////            }
+//            int eventType = 1; // userInput
+//            if (line.getTitle().toLowerCase().startsWith("budget")
+//                || line.getTitle().toLowerCase().startsWith("monthly")
+//                || line.getTitle().toLowerCase().startsWith("weekly"))
+//                eventType = 0; // autoUpdate
 
-
-
+//
+//
             ContentValues values = new ContentValues();
             values.put(RE_KEY_TITLE, line.getTitle());
             values.put(RE_KEY_DETAILS, line.getDetails());
             values.put(RE_KEY_AMOUNT, line.getAmount());
-            values.put(RE_KEY_DATE, milliseconds);
-            values.put(RE_KEY_EVENT_TYPE, eventType);
+            values.put(RE_KEY_DATE, line.getDate());
+            values.put(RE_KEY_EVENT_TYPE, line.getEventType().toInt());
 
             // Inserting row to the relevant table
             db.insert(itemTable, null, values);
-        }
+//
+//            if (!line.getEventType().equals(BudgetLine.BudgetLineEventType.AUTO_UPDATE) && (
+//                    line.getTitle().startsWith("weekly")||
+//                            line.getTitle().startsWith("monthly")
+//                    )) {
+//                // create a "MOVE_FROM_LAST line right after
+//                values = new ContentValues();
+//                values.put(RE_KEY_TITLE, BudgetLine.BudgetLineEventType.MOVE_FROM_LAST_TIME.toString());
+//                values.put(RE_KEY_DETAILS, context.getString(R.string.app_autoupdate_fromlast_details));
+//                values.put(RE_KEY_AMOUNT, lastValue);
+//                values.put(RE_KEY_DATE, line.getDate()+1);
+//                values.put(RE_KEY_EVENT_TYPE, BudgetLine.BudgetLineEventType.MOVE_FROM_LAST_TIME.toInt());
+//
+//                // Inserting row to the relevant table
+//                db.insert(itemTable, null, values);
+//                lastValue = 0;
+//            }
+//            lastValue += line.getAmount();
+//
+//        }
 //        String add_col = "ALTER TABLE " + tableName + " ADD COLUMN " + RE_KEY_EVENT_TYPE + " INTEGER";
 //        db.execSQL(add_col);
 
 //        String insert_values = "UPDATE " + tableName + " SET " + RE_KEY_EVENT_TYPE + " = " + RE_KEY_AMOUNT;
 //        db.execSQL(insert_values);
+        }
+
+        updateItemCurAmount(item, db);
     }
 
     /**

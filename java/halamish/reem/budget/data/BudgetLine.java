@@ -15,7 +15,8 @@ public class BudgetLine implements Serializable{
         AUTO_UPDATE(0),
         USER_INPUT(1),
         ARCHIVE_ENDS_HERE(2),
-        BUDGET_CREATED(3);
+        BUDGET_CREATED(3),
+        MOVE_FROM_LAST_TIME(4);
 
         private int value;
         BudgetLineEventType(int val){

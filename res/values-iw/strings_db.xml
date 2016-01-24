@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="db_budget_created">תקציב נוצר!</string>
+    <string name="db_cleared_as_user_requested">ניקוי לפי דרישה</string>
+    <string name="db_automatic">אוטומטי</string>
+    <string name="budgetitem_weekly">שבועי</string>
+    <string name="budgetitem_monthly">חודשי</string>
+</resources>

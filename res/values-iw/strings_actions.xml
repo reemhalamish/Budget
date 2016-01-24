@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_settings">הגדרות</string>
+    <string name="action_item_show_details">הצגת פירוט</string>
+    <string name="action_item_edit">עריכת פריט</string>
+    <string name="action_item_del">מחיקת פריט</string>
+    <string name="action_report">יצירת דוח</string>
+    <string name="action_choose_multiple">מצב בחירה מרובה</string>
+    <string name="action_item_clear">ניקוי פריט</string>
+</resources>

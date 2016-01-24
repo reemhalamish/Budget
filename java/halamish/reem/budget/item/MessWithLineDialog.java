@@ -13,7 +13,7 @@ import android.widget.EditText;
 import halamish.reem.budget.R;
 import halamish.reem.budget.data.BudgetLine;
 import halamish.reem.budget.data.DatabaseHandler;
-import halamish.reem.budget.utils;
+import halamish.reem.budget.Utils;
 
 /**
  * Created by Re'em on 10/17/2015.
@@ -53,7 +53,7 @@ public class MessWithLineDialog extends Activity {
 
         final boolean editingLine = lineToEdit != null;
         if (editingLine) {
-            btn_action.setText("Edit!");
+            btn_action.setText(R.string.dialog_btn_action_edit);
             edt_amount.setText(String.valueOf(Math.abs(lineToEdit.getAmount())));
             edt_details.setText(lineToEdit.getDetails());
             edt_title.setText(lineToEdit.getTitle());
@@ -64,7 +64,7 @@ public class MessWithLineDialog extends Activity {
                 cbx_expense.setChecked(false);
 
         } else {
-            btn_action.setText("Add!");
+            btn_action.setText(R.string.dialog_btn_action_add);
         }
 
 
@@ -91,7 +91,7 @@ public class MessWithLineDialog extends Activity {
                     db.tblUpdateBudgetLine(db.getBudgetItem(item_name), lineToEdit, null);
                 } else {
                     final BudgetLine.BudgetLineEventType eventType = BudgetLine.BudgetLineEventType.USER_INPUT;
-                    final long time = utils.getMillisecondNow();
+                    final long time = Utils.getMillisecondNow();
                     newbie = new BudgetLine(title, details, amount, time, eventType);
                     db.tblAddBudgetLine(db.getBudgetItem(item_name), newbie);
                 }

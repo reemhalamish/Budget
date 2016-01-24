@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ok">ok</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="misc_updated">"updated "</string>
+    <string name="misc_updateweekly_for_amountofmoney">for</string>
+    <string name="misc_current_amount">current amount</string>
+    <string name="misc_currency">cash</string>
+    <string name="misc_inner_info_id_is">Inner info: id is</string>
+</resources>

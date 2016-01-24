@@ -107,7 +107,7 @@ public class GridViewItemAdapter extends MyAdapter<BudgetItem> {
         TextView txtAmount = (TextView) view.findViewById(R.id.tv_item_amount);
         ImageView hiddenVi = (ImageView) view.findViewById(R.id.iv_item_hidden_vi);
 
-        txtTitle.setText("Add new?");
+        txtTitle.setText(R.string.title_add_new);
         txtTitle.setTextColor(Color.BLUE);
         txtAmount.setText("");
         hiddenVi.setVisibility(View.GONE);

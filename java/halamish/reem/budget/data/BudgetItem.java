@@ -1,15 +1,18 @@
 package halamish.reem.budget.data;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.nio.Buffer;
+
+import halamish.reem.budget.R;
 
 
 /**
  * Created by Re'em on 10/17/2015.
  */
 public class BudgetItem {
-    public static final String WEEKLY = "weekly", MONTHLY = "monthly", NONE = "none";
+    public static final String WEEKLY = "weekly", MONTHLY = "monthly";
     private static final int CUR_VALUE_DEFAULT = 0;
     private static final int AUTO_UPDATE_DEFAULT = 100;
     private static final String TAG = "BudgetItem";
@@ -105,6 +108,13 @@ public class BudgetItem {
     public String getAuto_update() {
         return auto_update;
     }
+    public String getLocalizedAuto_update(Context context) {
+        if (auto_update.equals(WEEKLY)) {
+            return context.getString(R.string.budgetitem_weekly);
+        } else {
+            return context.getString(R.string.budgetitem_monthly);
+        }
+    }
 
     public void setAuto_update(String auto_update) {
         this.auto_update = auto_update;
@@ -129,5 +139,6 @@ public class BudgetItem {
     public void logMyself() {
         Log.d(TAG, name + " id: " + id + ", curValue: " + cur_value + ", autoUpdate: " + auto_update + ", autoUpdateAmount: " + auto_update_amount + ", order_id: " + order_id);
     }
+
 }
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="itemactivity_title">סעיף</string>
+
+    <string name="itemactivity_header_date">תאריך</string>
+    <string name="itemactivity_header_title">כותרת</string>
+    <string name="itemactivity_header_Amount">₪</string>
+    <string name="itemactivity_loadearlier">הצג ארכיון</string>
+</resources>

@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -31,7 +32,7 @@ public class ItemActivity extends AppCompatActivity {
     private static final int NEW_LINE_REQUEST = 1;
     private static final int EDIT_LINE_REQUEST = 2;
     private static final String TAG = "ItemActivity";
-    private static final long FADE_AWAY_DUR = 500; // for the sandclock onCliCkListener
+    private static final long FADE_AWAY_DUR = 5000; // for the sandclock onCliCkListener
     private static final long FRAME_CHANGE_DUR = 300;
     private static final int[] SANDCLOCK_FRAMES = new int[]{
                 R.mipmap.gray_converted_sandclock_0,
@@ -70,6 +71,9 @@ public class ItemActivity extends AppCompatActivity {
         lv_allItems.setAdapter(aa);
         db.insertAdapter(aa);
 
+        // set the title
+        setTitle(getString(R.string.itemactivity_title) + " - " + budgetItemName);
+
 
         // create the "load previous" button at top
         if (parser.moreInfoAtAllThenAtNonArchived()) { // if exist earlier lines
@@ -85,7 +89,7 @@ public class ItemActivity extends AppCompatActivity {
         }
 
         // manage the sandclock and the plus
-        findViewById(R.id.iv_itemactivity_sandclock_container).setOnClickListener(getNewLineListener());
+        findViewById(R.id.iv_itemactivity_add).setOnClickListener(getNewLineListener());
         startSandClockAnimationIfNeeded();
 
     }
@@ -98,13 +102,20 @@ public class ItemActivity extends AppCompatActivity {
                 iv_sandclock.animate()
                         .alpha(0.0f)
                         .setDuration(FADE_AWAY_DUR)
+                        .setInterpolator(new AccelerateInterpolator())
                         .setListener(new Animator.AnimatorListener() {
-                            public void onAnimationStart(Animator animator) {}
+                            public void onAnimationStart(Animator animator) {
+                            }
+
                             public void onAnimationEnd(Animator animator) {
                                 iv_sandclock.setVisibility(View.GONE);
                             }
-                            public void onAnimationCancel(Animator animator) {}
-                            public void onAnimationRepeat(Animator animator) {}
+
+                            public void onAnimationCancel(Animator animator) {
+                            }
+
+                            public void onAnimationRepeat(Animator animator) {
+                            }
                         })
                         .start();
             }
@@ -122,10 +133,10 @@ public class ItemActivity extends AppCompatActivity {
 
         new CountDownTimer(FRAME_CHANGE_DUR * SANDCLOCK_FRAMES.length, FRAME_CHANGE_DUR) {
             float progressPercentage = 1.0f;
-            final float progressJumps = 1.0f / (SANDCLOCK_FRAMES.length-1); // I want 0 to get at ALMOST final frame
+            final float progressJumps = 1.0f / (SANDCLOCK_FRAMES.length - 1.0f); // I want 0 to get at ALMOST final frame
             int index = 0;
             public void onTick(long l) {
-                if (progressPercentage >= percentage) {
+                if (progressPercentage > percentage) {
                     iv_sandclock.setImageResource(SANDCLOCK_FRAMES[index]);
                     Log.d(TAG, "orgPer: " + percentage + ", curPer: " + progressPercentage + ", i: " + index);
                     progressPercentage -= progressJumps;
@@ -149,8 +160,9 @@ public class ItemActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (db != null)
+            db.removeAdapter(aa);
         super.onDestroy();
-        db.removeAdapter(aa);
     }
 
     @Override
@@ -202,10 +214,10 @@ public class ItemActivity extends AppCompatActivity {
 
     private void createDeleteItemDialog(Context context, final String budgetItemName) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Confirm deleting " + budgetItemName);
-        builder.setMessage("sure to DELETE?");
+        builder.setTitle(getString(R.string.title_delete_confirm)+" " + budgetItemName);
+        builder.setMessage(R.string.msg_delete_are_you_sure);
         builder.setCancelable(true);
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 finish();
                 db.deleteBudgetItem(db.getBudgetItem(budgetItemName), null);
@@ -214,7 +226,7 @@ public class ItemActivity extends AppCompatActivity {
             }
         });
 
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
@@ -228,10 +240,10 @@ public class ItemActivity extends AppCompatActivity {
     public static void createItemInfoDialog(Context context, String budgetItemName) {
         final BudgetItem budgetItem= new DatabaseHandler(context).getBudgetItem(budgetItemName);
         new AlertDialog.Builder(context)
-                .setTitle(budgetItemName + " Details:")
-                .setMessage("updated " + budgetItem.getAuto_update() + " for " + budgetItem.getAuto_update_amount() + " cash.\ncurrent amount: " + budgetItem.getCur_value() + "\n\n(Inner info: id is " + budgetItem.getId() + ")")
+                .setTitle(budgetItemName + context.getString(R.string.title_details))
+                .setMessage(context.getString(R.string.misc_updated) + budgetItem.getLocalizedAuto_update(context) + ' '+context.getString(R.string.misc_updateweekly_for_amountofmoney)+' ' + budgetItem.getAuto_update_amount() + ' ' +context.getString(R.string.misc_currency) +".\n" +context.getString(R.string.misc_current_amount) + ": " + budgetItem.getCur_value() + "\n\n(" + context.getString(R.string.misc_inner_info_id_is) + " " + budgetItem.getId() + ")")
                 .setCancelable(true)
-                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                .setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
@@ -264,40 +276,49 @@ public class ItemActivity extends AppCompatActivity {
 
             private void createOptionsDialog(final BudgetLine line) {
                 // create a list of options
-                final CharSequence[] options = {"edit", "DELETE"};
+                final CharSequence[] options;
+                if (line.getEventType() == BudgetLine.BudgetLineEventType.USER_INPUT)
+                    options = new CharSequence[]{getString(R.string.dialog_options_delete), getString(R.string.dialog_options_edit)};
+                else
+                    options = new CharSequence[]{getString(R.string.dialog_options_delete)};
+
+                final String title;
+                if (line.getTitle().length() > 0)
+                    title = line.getTitle();
+                else
+                    title = '<' + getString(R.string.title_empty_line) + '>';
 
                 new AlertDialog.Builder(context)
-                        .setTitle("Line: " + line.getTitle())
+                        .setTitle(getString(R.string.msg_line) + title)
                         .setItems(options, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 switch (i) {
-                                    case 0: // edit
-                                        createLineEditDialog(line);
-                                        dialogInterface.dismiss();
-                                        break;
-                                    case 1: // DELETE
+                                    case 0: // DELETE
                                         createDeleteLineDialog(line);
                                         dialogInterface.dismiss();
                                         break;
-
+                                    case 1: // edit
+                                        createLineEditDialog(line);
+                                        dialogInterface.dismiss();
+                                        break;
                                 }
                             }
 
                             private void createDeleteLineDialog(final BudgetLine line) {
-                                String msg = "Are you sure to DELETE? (the action can't be un-done!)";
+                                String msg = getString(R.string.msg_delete_are_you_sure) + " " + getString(R.string.msg_delete_cant_be_undone);
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                                builder.setTitle("Confirm Deleting")
+                                builder.setTitle(R.string.title_delete_confirm)
                                         .setMessage(msg)
                                         .setCancelable(true)
-                                        .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 db.tblDeleteBudgetLine(db.getBudgetItem(budgetItemName), line, null);
                                                 dialog.dismiss();
                                                 startSandClockAnimationIfNeeded();
                                             }
                                         })
-                                        .setNegativeButton("no", new DialogInterface.OnClickListener() {
+                                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 dialogInterface.cancel();
@@ -333,13 +354,13 @@ public class ItemActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NEW_LINE_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Toast.makeText(this, "line has been added!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.msg_line_success_add, Toast.LENGTH_SHORT).show();
                 aa.updateAdapter();
                 startSandClockAnimationIfNeeded();
             }
         } else if (requestCode == EDIT_LINE_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Toast.makeText(this, "line has been modified!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.msg_line_success_edit, Toast.LENGTH_SHORT).show();
                 aa.updateAdapter();
                 startSandClockAnimationIfNeeded();
             }

@@ -2,10 +2,10 @@ package halamish.reem.budget;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import halamish.reem.budget.data.BudgetItem;
@@ -22,16 +22,17 @@ public class BudgetApp extends Application {
     private static final String TAG = "bapp";
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
+    Settings settings;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
-        utils.init();
+        Utils.init();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(BudgetApp.this);
-
-//        testTime();
+        settings = Settings.init(this, prefs);
+        Rsrcs.init(this); // AFTER Settings.init()
 
         DatabaseHandler db = new DatabaseHandler(this);
         MainActivityMultiSelectHandler.getInstance().init(db);
@@ -47,9 +48,7 @@ public class BudgetApp extends Application {
         Calendar lastUpdated = Calendar.getInstance();
         long lastTimeUsed = prefs.getLong("budget.lastUpdated", 0);
         lastUpdated.setTimeInMillis(lastTimeUsed);
-
         Calendar today = Calendar.getInstance();
-        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd");
 
         Log.d(TAG, "today");
 
@@ -72,13 +71,7 @@ public class BudgetApp extends Application {
             dispCal.add(Calendar.MONTH, -1 * (monthsPassed - 1)); // start the display calendar
             for (int i = 0; i < monthsPassed; i++) {
                 for (BudgetItem item : db.getAllMonthlyUpdate()) {
-                    BudgetLine newLine = new BudgetLine(
-                            "monthly add - " + utils.getMonth(dispCal.getTime()),
-                            "automatic",
-                            item.getAuto_update_amount(),
-                            dispCal.getTime().getTime(),
-                            BudgetLine.BudgetLineEventType.AUTO_UPDATE);
-                    db.tblAddBudgetLine(item, newLine);
+                    finishedSeason(dispCal, item, db);
                 }
                 dispCal.add(Calendar.MONTH, 1); // prepare for next month
             }
@@ -90,14 +83,7 @@ public class BudgetApp extends Application {
 
             for (int i = 0; i < weeksPassed; i++) {
                 for (BudgetItem item : db.getAllWeeklyUpdate()) {
-                    BudgetLine newLine = new BudgetLine(
-                            "weekly add (" + dispCal.get(Calendar.WEEK_OF_YEAR) + ")",
-                            "automatic",
-                            item.getAuto_update_amount(),
-                            dispCal.getTime().getTime(),
-                            BudgetLine.BudgetLineEventType.AUTO_UPDATE
-                    );
-                    db.tblAddBudgetLine(item, newLine);
+                    finishedSeason(dispCal, item, db);
                 }
                 dispCal.add(Calendar.DATE, 7); // add a week for next line
             }
@@ -108,10 +94,61 @@ public class BudgetApp extends Application {
         editor.apply();
     }
 
+    void finishedSeason(Calendar cal, BudgetItem item, DatabaseHandler db) {
+        int prevBalance = item.getCur_value();
+        String autoUpdateTime = item.getAuto_update();
+        String title;
+        switch (autoUpdateTime) {
+            case BudgetItem.WEEKLY:
+                title = getString(R.string.app_autoupdate_weeklyadd) + " (" + cal.get(Calendar.WEEK_OF_YEAR) + ")";
+                break;
+            case BudgetItem.MONTHLY:
+            default:
+                title = getString(R.string.app_autoupdate_monthlyadd)+ " (" + Utils.getMonth(cal.getTime()) + ")";
+
+        }
+
+        BudgetLine newLine = new BudgetLine(
+                title ,
+                getString(R.string.app_autoupdate_details_automatic),
+                item.getAuto_update_amount(),
+                cal.getTime().getTime(),
+                BudgetLine.BudgetLineEventType.AUTO_UPDATE
+        );
+        db.tblAddBudgetLine(item, newLine);
+
+        // choosing what to do with the previous balance
+        if (settings.isKeepBalanceFromLast()) {
+            switch (autoUpdateTime) {
+                case BudgetItem.WEEKLY:
+                    title = getString(R.string.app_autoupdate_fromlast_week);
+                    break;
+                case BudgetItem.MONTHLY:
+                default:
+                    title = getString(R.string.app_autoupdate_fromlast_month);
+            }
+
+            newLine = new BudgetLine(
+                    title,
+                    getString(R.string.app_autoupdate_fromlast_details),
+                    prevBalance,
+                    cal.getTime().getTime() + 1,
+                    BudgetLine.BudgetLineEventType.MOVE_FROM_LAST_TIME);
+            db.tblAddBudgetLine(item, newLine);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.d(TAG, "onConfigurationChanged");
+        settings.updateLocal();
+    }
+
     @Override
     public void onTerminate() {
         MainActivityMultiSelectHandler.getInstance().freeMemory();
-        utils.freeMemory();
+        Utils.freeMemory();
         super.onTerminate();
     }
 }
@@ -125,17 +162,16 @@ TODO:
 
 @ add option to open a dialog with the line's info onPress on the line
 
-@ support for hebrew
-
  */
 
 
 /*
 ONEDAY
 
-@ when clicking the sum, it will open some nice animation of money and will show you some fancy graph
+@ at ItemActivity when clicking the sum, it will open some nice animation of money and will show you some fancy graph
+with the cur-amount of every week. with some noce massage telling you if you got better or worse
 
-@ the design of BudgetLineParsser will cause troubles when using long time - O(n)
+@ the design of BudgetLineParser will cause troubles when using the app long time - O(n)
 should go for a better design - add column "archived" in BudgetLine SQLite tables and ask only for archived\all
 (then the parser will need an access to the db itself?)
 can be solved either by auto-deleting when reaching more then 1000 lines
@@ -147,5 +183,7 @@ with a checkbox and a default value that can be changed, plus add some more with
 
 
 @ make all work with db run in another thread and a nice spiralla thingy will move round until it's done
+
+@ ACHIEVEMENTS - when user does good stuff (e.g. staying more then 0 for week, for month, for 3 times in a row, "recovering" from worse-than zero, staying at more than zero even after reduced auto_update in the budget, etc...)
 
  */

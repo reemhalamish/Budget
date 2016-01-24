@@ -8,7 +8,7 @@ import java.util.Locale;
 /**
  * Created by Re'em on 10/17/2015.
  */
-public class utils {
+public class Utils {
     private static SimpleDateFormat fullDateFormatter, monthOnlyFormatter;
 
     public static void init() {

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">תקציב</string>
+    <string name="app_autoupdate_weeklyadd">תוספת שבועית</string>
+    <string name="app_autoupdate_monthlyadd">תוספת חודשית</string>
+    <string name="app_autoupdate_details_automatic">אוטומטי</string>
+    <string name="app_autoupdate_fromlast_week">יתרה מהשבוע הקודם</string>
+    <string name="app_autoupdate_fromlast_month">יתרה מהחודש הקודם</string>
+    <string name="app_autoupdate_fromlast_details">שינוי ההתנהגות דרך הגדרות</string>
+	
+    <string name="report_header_budgetline">מספר סידורי של שורה, כמות בשקלים, סוג, כותרת, פרטים, תאריך</string>
+    <string name="report_header_budgetitem">מספר סידורי, שם, תוספת כל, תוספת בשקלים, יתרה נוכחית</string>
+    <string name="report_filename_main">_ראשי_</string>
+</resources>
