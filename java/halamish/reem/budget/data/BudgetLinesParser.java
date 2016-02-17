@@ -51,7 +51,7 @@ public class BudgetLinesParser {
         return nonArchivedItems.size() < allItems.size();
     }
 
-    public int getStartPositionOfNonArchivedInAll() {
-        return allItems.size() - nonArchivedItems.size();
+    public int getLastPositionOfArchived() {
+        return allItems.size() - nonArchivedItems.size() - 1;
     }
 }

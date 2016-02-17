@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="500px"
+    android:id="@+id/rl_intro"
+    android:background="@drawable/blue_white_blue_gradient"
+    >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/converted_bubble_blue"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/tv_intro_bubble1_eng"
+        android:gravity="center"
+        android:text=""
+        android:textColor="#000"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/app_name"
+        android:id="@+id/tv_intro_title"
+        android:layout_below="@+id/tv_intro_bubble1_eng"
+        android:layout_centerHorizontal="true"
+        android:textColor="#000"
+        />
+
+    <!--ONEDAY needed only in the "about us"-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/activity_intro_take_responsibility"
+        android:layout_below="@+id/tv_intro_title"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/tv_intro_line"
+        android:paddingTop="10dp"
+        android:visibility="gone"
+        android:textColor="#000"
+        />
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/converted_bubble_white"
+        android:id="@+id/iv_intro_bubble2"
+        tools:ignore="RtlHardcoded"
+        android:textColor="#000"
+        android:layout_alignTop="@+id/tv_intro_bubble3_heb"
+        android:layout_alignParentLeft="true"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/converted_bubble_green"
+        android:id="@+id/tv_intro_bubble3_heb"
+        android:gravity="center"
+        tools:ignore="RtlHardcoded"
+        android:text=""
+        android:textColor="#000"
+        android:layout_alignBottom="@+id/tv_intro_title"
+        android:layout_toRightOf="@+id/tv_intro_bubble1_eng"
+        />
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="16dp"-->
+        <!--android:text="English?"-->
+        <!--android:id="@+id/tv_intro_english"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:background="@drawable/converted_bubble_green"-->
+        <!--android:gravity="center"-->
+        <!--android:visibility="invisible"-->
+
+        <!--tools:ignore="HardcodedText,RtlHardcoded" />-->
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="16dp"-->
+        <!--android:text="עברית?"-->
+        <!--android:gravity="center"-->
+        <!--android:id="@+id/tv_intro_hebrew"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:background="@drawable/converted_bubble_blue"-->
+        <!--android:visibility="invisible"-->
+        <!--tools:ignore="HardcodedText,RtlHardcoded" />-->
+
+
+</RelativeLayout>

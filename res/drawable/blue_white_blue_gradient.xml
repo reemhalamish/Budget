@@ -5,8 +5,9 @@
             <gradient
                 android:startColor="#fff"
                 android:centerColor="#fff"
-                android:endColor="#357cdc"
+                android:endColor="#4fa5d5"
                 android:angle="225" />
+            <!--"#357cdc"  prev 3rd color-->
         </shape>
     </item>
 </selector>

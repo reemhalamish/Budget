@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/tutorial_explanation_text"
+        android:textSize="18sp"
+        android:text="@string/tut_v3_ready"
+        android:id="@+id/tv_tut_3_text1"
+        android:layout_above="@+id/tv_tut_3_text2"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/tutorial_explanation_text"
+        android:textSize="25sp"
+        android:paddingTop="3dp"
+        android:paddingBottom="40dp"
+        android:text="@string/tut_v3_go_on"
+        android:id="@+id/tv_tut_3_text2"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+
+
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        style="@style/tutorial_explanation_text"
+        android:textSize="30sp"
+        android:paddingTop="0dp"
+        android:text="@string/tut_v3_start"
+        android:id="@+id/tv_tut_3_press_to_start"
+        android:background="@drawable/converted_bubble_blue"
+        android:gravity="center"
+        android:layout_below="@+id/tv_tut_3_text2"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>

@@ -1,4 +1,5 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-      <item name="TAG_BUDGET_ITEM_NAME" type="id"/>
+    <item name="TAG_BUDGET_ITEM_NAME" type="id"/>
+    <item name="TAG_BUDGET_ITEM_PRETTY_NAME" type="id"/>
     <item name="TAG_BUDGET_LINE" type="id"/>
     </resources>

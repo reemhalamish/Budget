@@ -15,7 +15,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:hint="Title"
+        android:hint="@string/dialog_hint_title"
         />
 
     <EditText
@@ -25,7 +25,7 @@
         android:layout_below="@+id/edt_addline_title"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:hint="details (optional)"
+        android:hint="@string/dialog_hint_details"
         />
 
     <EditText
@@ -37,12 +37,12 @@
         android:layout_below="@+id/edt_addline_details"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:hint="amount"/>
+        android:hint="@string/dialog_hint_amount"/>
 
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="expense? (leave empty for income)"
+        android:text="@string/dialog_hint_expense_cbox"
         android:id="@+id/cbx_addline_expense"
         android:layout_below="@+id/edt_addline_amount"
         android:layout_alignParentLeft="true"
@@ -52,7 +52,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add!"
+        android:text="@string/dialog_btn_action_add"
         android:id="@+id/btn_addline_add"
         android:layout_below="@+id/cbx_addline_expense"
         android:layout_alignParentLeft="true"

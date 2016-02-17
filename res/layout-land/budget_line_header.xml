@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:id="@+id/rl_itemactivity_header"
+    android:layout_margin="10dp"
+    >
+
+    <!-- AT ANY CHANGE HERE YOU SHOULD CHANGE THE HEADER ROW AS WELL!! -->
+
+    <TextView
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:gravity="right"
+        android:textAlignment="gravity"
+        android:text="@string/itemactivity_header_Amount"
+        android:id="@+id/tv_itemactivity_header_amount"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+    <TextView
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/itemactivity_header_date"
+        android:id="@+id/tv_itemactivity_header_date"
+        android:gravity="center"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:maxLines="1"
+
+
+        android:layout_alignBottom="@+id/tv_itemactivity_header_amount"
+        android:layout_toRightOf="@+id/tv_itemactivity_header_amount"
+        android:layout_toEndOf="@+id/tv_itemactivity_header_amount" />
+
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/itemactivity_header_title"
+        android:layout_toEndOf="@+id/tv_itemactivity_header_date"
+        android:layout_toRightOf="@+id/tv_itemactivity_header_date"
+        android:id="@+id/tv_itemactivity_header_title"
+        android:maxLength="20"
+        android:gravity="start"
+        android:textAlignment="gravity"
+        android:maxLines="1"
+        android:paddingEnd="10dp"
+    />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/itemactivity_header_details"
+        android:layout_toEndOf="@+id/tv_itemactivity_header_title"
+        android:id="@+id/tv_itemactivity_header_details"
+        android:gravity="start"
+        android:textAlignment="gravity"
+        android:maxLines="1"
+        android:layout_alignParentRight="true"
+        android:textColor="#000"
+
+        />
+
+    <!-- horizontal line -->
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:background="#888"
+        android:layout_below="@+id/tv_itemactivity_header_title"
+        />
+
+</RelativeLayout>

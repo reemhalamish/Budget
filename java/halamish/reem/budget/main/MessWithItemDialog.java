@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,7 +43,7 @@ public class MessWithItemDialog extends Activity {
         if (action == ItemAction.EDIT) {
             oldItem = new DatabaseHandler(this).getBudgetItem(senderIntent.getStringExtra("item_name"));
             edt_amount.setText(String.valueOf(oldItem.getAuto_update_amount()));
-            edt_title.setText(oldItem.getName());
+            edt_title.setText(oldItem.getPretty_name());
             cbx_monthly_weekly.setChecked(oldItem.getAuto_update().equals(BudgetItem.MONTHLY));
             btn_action.setText(R.string.dialog_btn_action_edit);
         } else {
@@ -67,12 +67,15 @@ public class MessWithItemDialog extends Activity {
                 } else {
                     newItem = new BudgetItem(title, BudgetItem.WEEKLY, amount);
                 }
-                if (action == ItemAction.ADD)
+                if (action == ItemAction.ADD) {
                     new DatabaseHandler(MessWithItemDialog.this).addBudgetItem(newItem);
-                else if (action == ItemAction.EDIT)
-                    Log.d(TAG, "sending to db handler... method: " + newItem.getAuto_update());
+                }
+                else if (action == ItemAction.EDIT) {
+                    // Log.d(TAG, "sending to db handler... method: " + newItem.getAuto_update());
+                    if (oldItem == null) throw new AssertionError();
+                    newItem.setName(oldItem.getName());
                     new DatabaseHandler(MessWithItemDialog.this).updateBudgetItem(oldItem, newItem, null);
-
+                }
                 setResult(RESULT_OK);
                 finish();
 

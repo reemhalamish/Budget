@@ -1,11 +1,10 @@
 package halamish.reem.budget.data;
 
 import android.content.Context;
-import android.util.Log;
 
-import java.nio.Buffer;
 
 import halamish.reem.budget.R;
+import halamish.reem.budget.misc.Settings;
 
 
 /**
@@ -23,33 +22,17 @@ public class BudgetItem {
     private String auto_update = MONTHLY;
     private int auto_update_amount = AUTO_UPDATE_DEFAULT;
     private int order_id;
+    private String pretty_name;
 
 
 
     public BudgetItem() {}
 
-//    public BudgetItem(String name) {
-//        this(0, name);
-//    }
-
-//    public BudgetItem(int id, String name) {
-//        this(id, name, CUR_VALUE_DEFAULT);
-//    }
-
-//    public BudgetItem(int id, String name, int cur_value) {
-//        this.id = id;
-//        this.cur_value = cur_value;
-//        this.name = name;
-//    }
-
-//    public BudgetItem(String name, int auto_update_amount) {
-//        this(name, BudgetItem.MONTHLY, auto_update_amount);
-//    }
 
     public BudgetItem(String name, String auto_update, int auto_update_amount) {
-        this.name = name;
         this.auto_update = auto_update;
         this.auto_update_amount = auto_update_amount;
+        this.pretty_name = name;
     }
 
 //    public BudgetItem(int id, String name, int cur_value, String auto_update, int auto_update_amount) {
@@ -61,13 +44,26 @@ public class BudgetItem {
 //        this.order_id = id;
 //    }
 
-    public BudgetItem(int id, String name, int cur_value, String auto_update, int auto_update_amount, int order_id) {
+    public BudgetItem(int id, String name, int cur_value, String auto_update, int auto_update_amount, int order_id, String pretty_name) {
         this.id = id;
         this.name = name;
         this.cur_value = cur_value;
         this.auto_update = auto_update;
         this.auto_update_amount = auto_update_amount;
         this.order_id = order_id;
+        this.pretty_name = pretty_name;
+    }
+
+    /**
+     * TO BE USED SOLELY IN THE TUTORIAL!
+     * HAS NOTHING TO ACTUALLY INSERT TO THE DB!
+     * @param prettyName
+     * @param curAmount
+     */
+    public BudgetItem(String prettyName, int curAmount) {
+        this.name = prettyName;
+        this.pretty_name = prettyName;
+        this.cur_value = curAmount;
     }
 
     public int getId() {
@@ -82,8 +78,17 @@ public class BudgetItem {
 
     public String getName() {
 //        String good_name = name.replace(' ', '_');
-        String good_name = name.replace(' ', '_').replaceAll("[^\\u0590-\\u05FFa-zA-Z0-9_]", "");
-        return good_name;
+//        String good_name = name.replace(' ', '_').replaceAll("[^\\u0590-\\u05FFa-zA-Z0-9_]", "");
+//        return good_name;
+        return name;
+    }
+
+    public String getPretty_name() {
+        return pretty_name;
+    }
+
+    public void setPretty_name(String pretty_name) {
+        this.pretty_name = pretty_name;
     }
 
     public void setName(String name) {
@@ -99,9 +104,9 @@ public class BudgetItem {
     }
 
     public void updateAmount(int amountToAdd) {
-        Log.d(TAG, "amount was " + cur_value);
+        // Log.d(TAG, "amount was " + cur_value);
         this.cur_value += amountToAdd;
-        Log.d(TAG, "amount now " + cur_value);
+        // Log.d(TAG, "amount now " + cur_value);
     }
 
 
@@ -137,7 +142,16 @@ public class BudgetItem {
     }
 
     public void logMyself() {
-        Log.d(TAG, name + " id: " + id + ", curValue: " + cur_value + ", autoUpdate: " + auto_update + ", autoUpdateAmount: " + auto_update_amount + ", order_id: " + order_id);
+        // Log.d(TAG, name + " id: " + id + ", curValue: " + cur_value + ", autoUpdate: " + auto_update + ", autoUpdateAmount: " + auto_update_amount + ", order_id: " + order_id);
+    }
+
+    public Settings.Language getLanguage() {
+        if (pretty_name.matches("[a-zA-Z0-9\\s_]+")) {
+            return Settings.Language.ENGLISH;
+        } else if (pretty_name.matches("[\\u0590-\\u05FF\\s0-9_]+")) {
+            return Settings.Language.HEBREW_UNISEX;
+        }
+        return null;
     }
 
 }

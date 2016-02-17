@@ -2,38 +2,46 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:background="@drawable/grid_view_tile_back"
-    android:layout_height="match_parent"
+    android:layout_height="120dp"
     >
+    <!--change column width here && at activity_main!-->
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/vi"
-        android:alpha="0.2"
-        android:id="@+id/iv_item_hidden_vi"
+        android:src="@drawable/converted_bubbles_selected_bg"
+        android:alpha="0.4"
+        android:id="@+id/iv_item_hidden_bg"
         android:visibility="visible"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
 
         />
 
-    <Space
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_width="1dp"
-        android:layout_height="40dp"
-        android:id="@+id/space_budget_item"
-        />
+    <!--<Space-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_width="1dp"-->
+        <!--android:layout_height="40dp"-->
+        <!--android:id="@+id/space_budget_item"-->
+        <!--/>-->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Name"
         android:id="@+id/tv_item_name"
-        android:layout_below="@+id/space_budget_item"
+        android:minLines="2"
+        android:maxLines="2"
+        android:maxWidth="130dp"
+        android:ellipsize="end"
+        android:gravity="center_horizontal"
+        android:layout_above="@+id/tv_item_amount"
         android:layout_centerHorizontal="true"
-         />
+
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -41,11 +49,13 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="amount"
         android:id="@+id/tv_item_amount"
-        android:layout_below="@+id/tv_item_name"
+        android:layout_above="@+id/space_budget_item"
         android:layout_centerHorizontal="true" />
 
     <Space
         android:layout_width="1dp"
-        android:layout_height="40dp"
-        android:layout_below="@+id/tv_item_amount"/>
+        android:layout_height="25dp"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/space_budget_item"
+        />
 </RelativeLayout>

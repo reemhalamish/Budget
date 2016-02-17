@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tut_v0_exp1">הסבר קצר, שניה לפני שמתחילים:</string>
+
+    <string name="tut_v1_entry1">סופר מרקט</string>
+    <string name="tut_v1_entry2">בגדים במבצע</string>
+    <string name="tut_v1_entry3">ממתקים</string>
+    <string name="tut_v1_exp1">צרו תקציב לכל דבר שאתם לא בטוחים איך הוא שואב לכם את הכסף.</string>
+    <string name="tut_v1_exp2">ככה תוכלו לראות מיידית כמה נשאר בתקציב!</string>
+
+    <string name="tut_v2_entry1_details">זה היה טעים</string>
+    <string name="tut_v2_entry1_title">קפה ממכונה</string>
+    <string name="tut_v2_entry2_details">תכלס, אני ילד... אני יודע!</string>
+    <string name="tut_v2_entry2_title">ממתקים</string>
+    <string name="tut_v2_exp1">צפיה נוחה במידע החשוב בתקציב</string>
+    <string name="tut_v2_exp2">שעון החול כאן כדי לעזור - אפשר להסתכל עליו ולהבין כמה כסף נשאר בסעיף</string>
+
+    <string name="tut_v3_ready">מוכנים?</string>
+    <string name="tut_v3_go_on">יאללה לכו על זה!</string>
+    <string name="tut_v3_start">התחלה</string>
+
+</resources>

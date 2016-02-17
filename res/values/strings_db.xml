@@ -5,4 +5,6 @@
     <string name="db_automatic">automatic</string>
     <string name="budgetitem_weekly">weekly</string>
     <string name="budgetitem_monthly">monthly</string>
+    <string name="db_budget_increase">budget increase</string>
+    <string name="db_budget_decrease">budget decrease</string>
 </resources>

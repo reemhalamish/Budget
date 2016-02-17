@@ -7,4 +7,6 @@
     <string name="misc_updateweekly_for_amountofmoney">עם</string>
     <string name="misc_current_amount">יתרה נוכחית</string>
     <string name="misc_currency">שקל</string>
+    <string name="misc_inner_info_id_is">מידע פנימי: מספר מזהה</string>
+
 </resources>

@@ -68,4 +68,6 @@
     <!--<string name="settings_warn_changes_now_on">please Notice - Changes here will only take effect FROM NOW ON</string>-->
     <!--<string name="settings_language">Language</string>-->
     <!--<string name="settings_language_hint">Most of the language changes will take effect immediately, you may need to restart the app for full effect</string>-->
+
+
 </resources>

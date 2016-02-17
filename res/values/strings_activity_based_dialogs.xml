@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_hint_title">Title</string>
+    <string name="dialog_hint_details">details (optional)</string>
+    <string name="dialog_hint_amount">amount</string>
+    <string name="dialog_hint_name">Name</string>
+    <string name="dialog_hint_budget">budget</string>
+    <string name="dialog_hint_cbox_monthly_weekly">monthly budget? (leave empty for weekly)</string>
+    <string name="dialog_hint_expense_cbox">expense? (leave empty for income)</string>
+
+    <string name="activity_item_cur_balance">Current Balance</string>
+</resources>

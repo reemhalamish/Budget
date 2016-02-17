@@ -37,17 +37,33 @@
         android:layout_toEndOf="@+id/tv_itemactivity_header_amount" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/itemactivity_header_title"
         android:layout_toEndOf="@+id/tv_itemactivity_header_date"
+        android:layout_toRightOf="@+id/tv_itemactivity_header_date"
         android:id="@+id/tv_itemactivity_header_title"
         android:maxLength="20"
+        android:gravity="center"
+        android:textAlignment="gravity"
+        android:maxLines="1"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/itemactivity_header_details"
+        android:layout_toEndOf="@+id/tv_itemactivity_header_title"
+        android:id="@+id/tv_itemactivity_header_details"
         android:gravity="right"
         android:textAlignment="gravity"
         android:maxLines="1"
-    />
+        android:layout_alignParentRight="true"
+        android:visibility="gone"
+
+        />
 
     <!-- horizontal line -->
     <View

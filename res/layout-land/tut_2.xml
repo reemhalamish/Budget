@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <include layout="@layout/budget_line_header"
+        android:id="@+id/inc_tut_2_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+
+        />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lv_tut_vf_2"
+        android:layout_below="@id/inc_tut_2_header"
+        android:alpha="0.2"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/tutorial_explanation_text"
+        android:text="@string/tut_v2_exp1"
+        android:id="@+id/tv_tut_2_explanation_listview"
+        android:layout_alignParentBottom="true"
+
+        />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:src="@drawable/converted_sandclock_40"
+        android:id="@+id/iv_tut_2_sandclock"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:visibility="gone"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/tutorial_explanation_text"
+        android:text="@string/tut_v2_exp2"
+        android:id="@+id/tv_tut_2_explanation_sandclock"
+        android:layout_alignTop="@+id/iv_tut_2_sandclock"
+        android:layout_toLeftOf="@+id/iv_tut_2_sandclock"
+        android:layout_toStartOf="@+id/iv_tut_2_sandclock"
+        android:paddingTop="0dp"
+        android:visibility="gone"
+        />
+</RelativeLayout>

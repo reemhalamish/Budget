@@ -1,17 +1,21 @@
 package halamish.reem.budget.main;
 
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.widget.GridView;
 import android.widget.ImageView;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 
 import halamish.reem.budget.item.ItemActivity;
 import halamish.reem.budget.MyAdapter;
@@ -25,6 +29,7 @@ import halamish.reem.budget.data.DatabaseHandler;
  */
 public class MainActivityMultiSelectHandler {
     private static final String TAG = "MultiSelectHandler";
+    private static final long DELAY_AFTER_SWAP_MS = 300;
 
     // private data needed for running
     private static MainActivityMultiSelectHandler s_instnace;
@@ -33,6 +38,7 @@ public class MainActivityMultiSelectHandler {
     // db and related
     private DatabaseHandler db;
     private HashSet<String> pressedBudgetItemsNames;
+    private Map<String, String> itemName_to_prettyName;
 
     // Activity, view and related
     private MainActivity context;
@@ -49,17 +55,12 @@ public class MainActivityMultiSelectHandler {
     public void init(DatabaseHandler db){
         this.db = db;
         pressedBudgetItemsNames = new HashSet<>();
+        itemName_to_prettyName = new HashMap<>();
     }
 
     public void startMultiSelect(boolean startFresh) {
         atMultiSelectMode = true;
         aa.startMultiSelect();
-
-        multi_delete.setVisibility(View.VISIBLE);
-        multi_info.setVisibility(View.GONE);
-        multi_swap.setVisibility(View.GONE);
-        multi_edit.setVisibility(View.GONE);
-        normalStatePlus.setVisibility(View.GONE);
 
         multi_delete.setOnClickListener(multipleDeleteDialogCreator());
         multi_info.setOnClickListener(multipleInfoDialogCreator());
@@ -68,6 +69,9 @@ public class MainActivityMultiSelectHandler {
 
         if (startFresh) {
             pressedBudgetItemsNames = new HashSet<>();
+            itemName_to_prettyName = new HashMap<>();
+        } else {
+            updateButtons(null);
         }
     }
 
@@ -77,31 +81,38 @@ public class MainActivityMultiSelectHandler {
      * 1  item  pressed: delete(trash can), details(i), duplicate(duplicate icon), clear(brush), edit(pencil)
      * 2  items pressed: delete, swap(exchange stretched)
      * 3+ items pressed: delete
-     * @param newSelectedItem the item being selected
+     * @param newSelectedItem the item being selected. Null can be passed at onCreate() with savedMemory to restore the buttons
      */
-    public void updateButtons(View newSelectedItem) {
-        String itemName = (String) newSelectedItem.getTag(R.id.TAG_BUDGET_ITEM_NAME);
-        if (pressedBudgetItemsNames.contains(itemName)) {
-            pressedBudgetItemsNames.remove(itemName);
-        } else {
-            pressedBudgetItemsNames.add(itemName);
+    public void updateButtons(@Nullable View newSelectedItem) {
+        if (newSelectedItem != null) {
+            String itemName = (String) newSelectedItem.getTag(R.id.TAG_BUDGET_ITEM_NAME);
+            String prettyName = (String) newSelectedItem.getTag(R.id.TAG_BUDGET_ITEM_PRETTY_NAME);
+            if (pressedBudgetItemsNames.contains(itemName)) {
+                pressedBudgetItemsNames.remove(itemName);
+            } else {
+                pressedBudgetItemsNames.add(itemName);
+                itemName_to_prettyName.put(itemName, prettyName);
+            }
         }
         switch (pressedBudgetItemsNames.size()) {
             case 0:
                 startNormalState();
                 return;
             case 1:
+                multi_delete.setVisibility(View.VISIBLE);
                 multi_swap.setVisibility(View.GONE);
                 multi_info.setVisibility(View.VISIBLE);
                 multi_edit.setVisibility(View.VISIBLE);
                 break;
             case 2:
+                multi_delete.setVisibility(View.VISIBLE);
                 multi_swap.setVisibility(View.VISIBLE);
                 multi_info.setVisibility(View.GONE);
                 multi_edit.setVisibility(View.GONE);
                 break;
             case 3:
             default:
+                multi_delete.setVisibility(View.VISIBLE);
                 multi_swap.setVisibility(View.GONE);
                 multi_info.setVisibility(View.GONE);
                 multi_edit.setVisibility(View.GONE);
@@ -164,9 +175,9 @@ public class MainActivityMultiSelectHandler {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String msg = context.getString(R.string.msg_delete_confirm) + "\n";
+                String msg = context.getString(R.string.msg_delete_confirm_multiple) + "\n";
                 for (String item : pressedBudgetItemsNames) {
-                    msg = msg + "\n" + item;
+                    msg = msg + "\n* " + itemName_to_prettyName.get(item);
                 }
                 msg = msg + "\n\n" + context.getString(R.string.msg_delete_cant_be_undone);
 
@@ -181,7 +192,7 @@ public class MainActivityMultiSelectHandler {
 //                            toDelete.add((String) item.getTag(R.id.TAG_BUDGET_ITEM_NAME));
                         db.deleteBudgetItems(pressedBudgetItemsNames, null);
                         pressedBudgetItemsNames = new HashSet<>();
-                        atMultiSelectMode = false;
+                        itemName_to_prettyName = new HashMap<>();
                         startNormalState();
                         dialog.dismiss();
                     }
@@ -204,7 +215,6 @@ public class MainActivityMultiSelectHandler {
             @Override
             public void onClick(View view) {
                 ItemActivity.createItemInfoDialog(context, getFirstItemFromPressed());
-                atMultiSelectMode = false;
                 startNormalState();
             }
         };
@@ -215,7 +225,7 @@ public class MainActivityMultiSelectHandler {
 
         return new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 if (pressedBudgetItemsNames.size() != 2)
                     throw new AssertionError("size incorrect for swap: " + pressedBudgetItemsNames.size());
                 final String firstItem, secondItem;
@@ -231,11 +241,11 @@ public class MainActivityMultiSelectHandler {
                 // ONEDAY make it use animation for the swap
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
-
-//                        atMultiSelectMode = false;
-//                        startNormalState();
+                        startNormalState();
                     }
-                }, 1);
+                }, DELAY_AFTER_SWAP_MS);
+
+
 
 //                firstItem.startAnimation(ta2);
 //                firstItem.bringToFront();

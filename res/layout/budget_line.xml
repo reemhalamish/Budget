@@ -36,16 +36,33 @@
         android:layout_toEndOf="@+id/tv_line_amount" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Title"
-        android:layout_toEndOf="@+id/tv_line_date"
         android:id="@+id/tv_line_title"
-        android:gravity="start"
+        android:gravity="center"
         android:textAlignment="gravity"
         android:maxLines="1"
-    />
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/tv_line_date"
+        android:layout_toEndOf="@+id/tv_line_date" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="details"
+        android:layout_toEndOf="@+id/tv_line_title"
+        android:id="@+id/tv_line_details"
+        android:gravity="right"
+        android:textAlignment="gravity"
+        android:maxLines="1"
+        android:layout_alignParentRight="true"
+        android:layout_alignBottom="@id/tv_line_date"
+        android:layout_alignTop="@id/tv_line_date"
+        android:visibility="gone"
+        />
     <!--android:maxLength="20"-->
 
 

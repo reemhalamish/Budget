@@ -1,13 +1,12 @@
 package halamish.reem.budget.main;
 
 import android.animation.LayoutTransition;
-import android.support.v7.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,16 +20,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-import halamish.reem.budget.Settings;
+import halamish.reem.budget.style.BudgetStyleActivity;
+import halamish.reem.budget.misc.Settings;
 import halamish.reem.budget.SettingsActivity;
 import halamish.reem.budget.item.ItemActivity;
 import halamish.reem.budget.R;
 import halamish.reem.budget.data.BudgetItem;
 import halamish.reem.budget.data.BudgetLine;
 import halamish.reem.budget.data.DatabaseHandler;
-import halamish.reem.budget.Utils;
+import halamish.reem.budget.misc.Utils;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BudgetStyleActivity {
     private static final String TAG = "main";
     private static final String REPORT_FILE_ROOT_FOLDER = "Budget";
     private static final String REPORT_FILE_NAME = "budget_report";
@@ -55,12 +55,21 @@ public class MainActivity extends AppCompatActivity {
             System.exit(0);
             return;
         }
-        Settings.getInstance().updateLocal(); // BEFORE setting the content view
+
+        Settings.getInstance().updateLocal();               // BEFORE setting the content view
         setContentView(R.layout.activity_main);
+
         gv_all_items = (GridView) findViewById(R.id.gv_main_all_items);
         db = new DatabaseHandler(this);
-//        init_db();
-        aa = new GridViewItemAdapter(this, R.layout.budget_item, db.getAllBudgetItems(null), getEveryItemOnClickListener(), getEveryItemOnClickMultiSelectModeListener(), getEveryItemLongClick(), getAddNewItemListener());
+        aa = new GridViewItemAdapter(
+                this,
+                R.layout.budget_item,
+                db.getAllBudgetItems(null),
+                getEveryItemOnClickListener(),
+                getEveryItemOnClickMultiSelectModeListener(),
+                getEveryItemLongClick(),
+                getAddNewItemListener()
+        );
 
         multiSelectHandler = MainActivityMultiSelectHandler.getInstance();
         multiSelectHandler.startModeBasedOnMemory(this, aa);
@@ -160,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
         }
         aa.notifyDataSetChanged();
         super.onResume();
+        findViewById(R.id.iv_main_add).setVisibility(View.VISIBLE); // the plus button
     }
 
     @Override
@@ -183,22 +193,39 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.action_choose_multiple && !multiSelectHandler.isAtMultiSelectMode()) {
+        if (id == R.id.action_main_choose_multiple && !multiSelectHandler.isAtMultiSelectMode()) {
             aa.startMultiSelect();
             multiSelectHandler.startMultiSelect(true);
-            // TODO: add clear option, make the buttons smaller
         }
 
-        if (id == R.id.action_report) {
+        if (id == R.id.action_main_report) {
             generateReportOnSD();
             return true;
         }
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_main_settings) {
             needToForceReload = true;
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
+        }
+
+        if (id == R.id.action_main_contact_us) {
+            Intent contactUsMail = new Intent(
+                    Intent.ACTION_SENDTO,
+                    Uri.fromParts(
+                            "mailto",
+                            "budget.app.rhalamish@gmail.com",
+                            null
+                    )
+            );
+            contactUsMail.putExtra(Intent.EXTRA_SUBJECT, "Budget - contact us");
+            contactUsMail.putExtra(Intent.EXTRA_TEXT, "");
+            startActivity(Intent.createChooser(contactUsMail, "Contact Us"));
+            // ONEDAY - add here some info about the phone...
+
+            // got from here
+            // http://stackoverflow.com/questions/8701634/send-email-intent
         }
 
         return super.onOptionsItemSelected(item);
@@ -233,77 +260,41 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onLongClick(View view) {
                 multiSelectHandler.startMultiSelect(true);
-
-                final String itemName = (String) view.getTag(R.id.TAG_BUDGET_ITEM_NAME);
                 multiSelectHandler.updateButtons(view);
+//                final String itemName = (String) view.getTag(R.id.TAG_BUDGET_ITEM_NAME);
+
                 return true;
-//                if (1==1) {return true;} //
-// TODO should i throw the rest down here? they were able to get once on long press... now they are reachable inside the item view
-//  TODO solution: add an item looks like icon with (...) so that when pressing it this dialog will appear
-//                // create a list of options
-//                final CharSequence[] options = {"edit", "show details", "create new with same budget", "clear", "DELETE"};
+            }
+
+//            private void createDeleteDialog(final String budgetItemName) {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+//                builder.setTitle(getString(R.string.title_delete_confirm) + ' ' + budgetItemName);
+//                builder.setMessage(getString(R.string.msg_delete_are_you_sure));
+//                builder.setCancelable(true);
+//                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        db.deleteBudgetItem(db.getBudgetItem(budgetItemName), null);
+//                        dialog.dismiss();
+//                    }
+//                });
 //
-//                new AlertDialog.Builder(context)
-//                        .setTitle(itemName)
-//                        .setItems(options, new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialogInterface, int i) {
-//                                switch (i) {
-//                                    case 0: // edit
-//                                        createEditDialog(itemName);
-//                                        break;
-//                                    case 1: // show details
-//                                        ItemActivity.createItemInfoDialog(context, itemName);
-//                                        break;
-//                                    case 2: // copy barebones - only the auto_update and update_amount with new name
-//                                        // TODO implement it in the db
-//                                        Toast.makeText(context, "not yet. TODO", Toast.LENGTH_SHORT).show();
-//                                        break;
-//                                    case 3: // clear
-//                                        db.clearBudgetItem(db.getBudgetItem(itemName));
-//                                        break;
-//                                    case 4: // DELETE
-//                                        createDeleteDialog(itemName);
-//                                        break;
+//                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                    }
+//                });
 //
-//                                }
-//                            }
-//                        })
-//                        .setCancelable(true)
-//                        .create()
-//                        .show();
-//                return true;
-            }
-
-            private void createDeleteDialog(final String budgetItemName) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-                builder.setTitle(getString(R.string.title_delete_confirm) + ' ' + budgetItemName);
-                builder.setMessage(getString(R.string.msg_delete_are_you_sure));
-                builder.setCancelable(true);
-                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        db.deleteBudgetItem(db.getBudgetItem(budgetItemName), null);
-                        dialog.dismiss();
-                    }
-                });
-
-                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                AlertDialog alert = builder.create();
-                alert.show();
-            }
-
-            private void createEditDialog(final String itemName) {
-                Intent editItemIntent = new Intent(MainActivity.this, MessWithItemDialog.class);
-                editItemIntent.putExtra("item_action", MessWithItemDialog.ItemAction.EDIT);
-                editItemIntent.putExtra("item_name", itemName);
-                MainActivity.this.startActivityForResult(editItemIntent, EDIT_ITEM_REQUEST);
-            }
+//                AlertDialog alert = builder.create();
+//                alert.show();
+//            }
+//
+//            private void createEditDialog(final String itemName) {
+//                Intent editItemIntent = new Intent(MainActivity.this, MessWithItemDialog.class);
+//                editItemIntent.putExtra("item_action", MessWithItemDialog.ItemAction.EDIT);
+//                editItemIntent.putExtra("item_name", itemName);
+//                MainActivity.this.startActivityForResult(editItemIntent, EDIT_ITEM_REQUEST);
+//            }
         };
     }
 
@@ -314,13 +305,11 @@ public class MainActivity extends AppCompatActivity {
                 Intent addItemIntent = new Intent(MainActivity.this, MessWithItemDialog.class);
                 addItemIntent.putExtra("item_action", MessWithItemDialog.ItemAction.ADD);
                 MainActivity.this.startActivityForResult(addItemIntent, ADD_ITEM_REQUEST);
+                findViewById(R.id.iv_main_add).setVisibility(View.GONE); // make the plus button disappear
             }
         };
     }
 
-//    protected void finishLongPress() {
-//        aa.endMultiSelect();
-//    }
 
     /**
      * Dispatch incoming result to the correct fragment.
@@ -373,13 +362,13 @@ public class MainActivity extends AppCompatActivity {
             for (BudgetItem item : allItems) {
                 reportLine =
                     item.getId() + ", " +
-                    item.getName() + ", " +
+                    item.getPretty_name() + ", " +
                     item.getLocalizedAuto_update(this) + ", " +
                     item.getAuto_update_amount() + ", " +
                     item.getCur_value() + "\n";
                 mainWriter.append(reportLine);
 
-                String itemFileName = REPORT_FILE_NAME + "_" + item.getName() + REPORT_FILE_EXT;
+                String itemFileName = REPORT_FILE_NAME + "_" + item.getPretty_name() + REPORT_FILE_EXT;
                 File itemReportFile = new File(todaysDirectory, itemFileName);
                 FileWriter itemWriter = new FileWriter(itemReportFile);
                 reportLine = getString(R.string.report_header_budgetline) + "\n";
@@ -404,8 +393,8 @@ public class MainActivity extends AppCompatActivity {
         }
         catch(IOException e)
         {
-            e.printStackTrace();
-            Log.e(TAG, e.getMessage());
+            Toast.makeText(this, R.string.report_error, Toast.LENGTH_LONG).show();
+            Log.e(TAG, e.getStackTrace().toString());
         }
     }
     private void forceReload() {

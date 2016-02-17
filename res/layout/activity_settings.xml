@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -7,122 +7,178 @@
     tools:context="halamish.reem.budget.SettingsActivity"
     android:background="@drawable/blue_white_blue_gradient"
     >
-
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/scrollView">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-    <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/settings_language"
+        android:id="@+id/tv_settings_language"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/rg_settings_radio_group">
-
-        <TextView
+        android:padding="10dp"
+        />
+        <RadioGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/settings_language"
-            android:id="@+id/tv_settings_language" />
+            android:layout_below="@id/tv_settings_language"
+            android:id="@+id/rg_settings_radio_group"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            >
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="English"
-            android:id="@+id/rb_settings_lng_eng"
-            android:checked="true" />
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="עברית - אחיד"
-            android:id="@+id/rb_settings_lng_heb_uni"
-            android:checked="false" />
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hebrew (Male) TODO"
-            android:id="@+id/rb_settings_lng_heb_male"
-            android:checked="false" />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="English"
+                android:id="@+id/rb_settings_lng_eng"
+                android:checked="true" />
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hebrew (Female) TODO"
-            android:id="@+id/rb_settings_lng_heb_fem"
-            android:checked="false" />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="עברית"
+                android:id="@+id/rb_settings_lng_heb_uni"
+                android:checked="false" />
+
+        <!--<RadioButton-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Hebrew (Male) ONEDAY"-->
+            <!--android:id="@+id/rb_settings_lng_heb_male"-->
+            <!--android:checked="false"-->
+            <!--android:visibility="gone"-->
+            <!--/>-->
+
+        <!--<RadioButton-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Hebrew (Female) ONEDAY"-->
+            <!--android:id="@+id/rb_settings_lng_heb_fem"-->
+            <!--android:checked="false"-->
+            <!--android:visibility="gone"-->
+            <!--/>-->
+    </RadioGroup>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/settings_language_hint"
             android:id="@+id/tv_settings_hint_language"
+            android:layout_below="@+id/tv_settings_language"
+            android:layout_toRightOf="@+id/rg_settings_radio_group"
+            android:layout_toEndOf="@+id/rg_settings_radio_group"
+            android:layout_alignTop="@+id/rg_settings_radio_group"
+
+            android:padding="10dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:text="@string/settings_close_app"
+            android:id="@+id/tv_settings_close_app"
+
+            android:layout_toRightOf="@+id/rg_settings_radio_group"
+            android:layout_toEndOf="@+id/rg_settings_radio_group"
+            android:layout_below="@+id/tv_settings_hint_language"
+            android:padding="10dp"
             />
 
-        <Button
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#888"
+            android:id="@+id/hl_settings_line"
+            android:layout_below="@+id/tv_settings_close_app" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:id="@+id/spc_settings_barrier_lan_balance"
+        android:layout_below="@+id/hl_settings_line"/>
+
+        <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/settings_brn_close_app"
-            android:id="@+id/btn_settings_close_app"
-            />
-    </RadioGroup>
+            android:text="@string/settings_keep_last_balance_cbx"
+            android:id="@+id/cbx_settings_keep_from_last"
+            android:checked="true"
+            android:layout_alignTop="@+id/iv_settings_qmark_keep_last_balance"
+            android:layout_alignBottom="@+id/iv_settings_qmark_keep_last_balance"
+            android:layout_toStartOf="@+id/iv_settings_qmark_keep_last_balance"
+            android:layout_alignParentStart="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/settings_title_budget_related"
-        android:id="@+id/tv_settings_title_budget"
-        android:layout_below="@+id/rg_settings_radio_group"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:paddingTop="20dp"
-        />
+    <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:id="@+id/iv_settings_qmark_keep_last_balance"
+            android:src="@drawable/help_smaller"
+            android:layout_below="@+id/spc_settings_barrier_lan_balance"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="@string/settings_qmark"
+            android:scaleType="fitEnd"
+            android:paddingStart="5dp"
+            />
+
+
+
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/settings_warn_changes_now_on"
         android:id="@+id/tv_settings_hint_budget"
-        android:layout_below="@+id/tv_settings_title_budget"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:paddingBottom="5dp"/>
+        android:paddingBottom="5dp"
+        android:layout_below="@+id/cbx_settings_keep_from_last"
+        android:layout_alignLeft="@+id/cbx_settings_keep_from_last"
+        android:layout_alignStart="@+id/cbx_settings_keep_from_last" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#888"
+        android:id="@+id/hl_settings_line_2"
+        android:layout_below="@+id/tv_settings_hint_budget" />
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:id="@+id/spc_settings_barrier_balance_flickering_sum"
+        android:layout_below="@+id/hl_settings_line_2"/>
+
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/settings_keep_last_balance_cbx"
-        android:id="@+id/cbx_settings_keep_from_last"
+        android:text="@string/settings_flickering_sum"
+        android:id="@+id/cbx_settings_flickering_sum"
         android:checked="true"
-        android:layout_below="@+id/tv_settings_hint_budget"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/iv_settings_qmark_flickering_sum"
+        android:layout_alignTop="@+id/iv_settings_qmark_flickering_sum"
+        android:layout_alignBottom="@+id/iv_settings_qmark_flickering_sum"
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:id="@+id/iv_settings_qmark"
-        android:src="@mipmap/help_smaller"
-        android:layout_alignTop="@+id/cbx_settings_keep_from_last"
-        android:layout_alignBottom="@+id/cbx_settings_keep_from_last"
-        android:layout_toRightOf="@+id/cbx_settings_keep_from_last"
-        android:layout_toEndOf="@+id/cbx_settings_keep_from_last"
-        android:contentDescription="@string/settings_qmark"
-        android:scaleType="fitStart"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
         />
 
-        </RelativeLayout>
-    </ScrollView>
+    <ImageView
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:id="@+id/iv_settings_qmark_flickering_sum"
+        android:src="@drawable/help_smaller"
+        android:layout_below="@+id/spc_settings_barrier_balance_flickering_sum"
+        android:layout_alignParentEnd="true"
+        android:contentDescription="@string/settings_qmark"
+        android:scaleType="fitEnd"
+        android:paddingStart="5dp"
+        />
 
 
-</RelativeLayout>
+    </RelativeLayout>
+</ScrollView>

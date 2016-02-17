@@ -6,11 +6,11 @@ import android.animation.Animator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,29 +21,32 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import halamish.reem.budget.R;
+import halamish.reem.budget.misc.Settings;
+import halamish.reem.budget.misc.Utils;
 import halamish.reem.budget.data.BudgetItem;
 import halamish.reem.budget.data.BudgetLine;
 import halamish.reem.budget.data.BudgetLinesParser;
 import halamish.reem.budget.data.DatabaseHandler;
+import halamish.reem.budget.style.BudgetStyleActivity;
 import halamish.reem.budget.main.MessWithItemDialog;
 
-public class ItemActivity extends AppCompatActivity {
+public class ItemActivity extends BudgetStyleActivity {
     private static final String ITEM_NAME = "item_name";
     private static final int NEW_LINE_REQUEST = 1;
     private static final int EDIT_LINE_REQUEST = 2;
     private static final String TAG = "ItemActivity";
-    private static final long FADE_AWAY_DUR = 5000; // for the sandclock onCliCkListener
+    private static final long FADE_AWAY_DUR = 250; // for the sandclock onCliCkListener
     private static final long FRAME_CHANGE_DUR = 300;
     private static final int[] SANDCLOCK_FRAMES = new int[]{
-                R.mipmap.gray_converted_sandclock_0,
-                R.mipmap.gray_converted_sandclock_10,
-                R.mipmap.gray_converted_sandclock_25,
-                R.mipmap.gray_converted_sandclock_40,
-                R.mipmap.gray_converted_sandclock_55,
-                R.mipmap.gray_converted_sandclock_70,
-                R.mipmap.gray_converted_sandclock_85,
-                R.mipmap.gray_converted_sandclock_100,
-                R.mipmap.gray_converted_sandclock_broken
+                R.drawable.converted_sandclock_0,
+                R.drawable.converted_sandclock_10,
+                R.drawable.converted_sandclock_25,
+                R.drawable.converted_sandclock_40,
+                R.drawable.converted_sandclock_55,
+                R.drawable.converted_sandclock_70,
+                R.drawable.converted_sandclock_85,
+                R.drawable.converted_sandclock_100,
+                R.drawable.converted_sandclock_broken
     };
 
 
@@ -67,18 +70,34 @@ public class ItemActivity extends AppCompatActivity {
         db = new DatabaseHandler(this);
         BudgetItem curItem = db.getBudgetItem(budgetItemName);
         BudgetLinesParser parser = new BudgetLinesParser(db.tblGetAllBudgetLines(curItem, null));
-        aa = new ListViewItemAdapter(this, R.layout.budget_line, lv_allItems, parser, curItem, getNewLineListener(), getEveryItemLongClickListener());
+        aa = new ListViewItemAdapter(
+                this,
+                R.layout.budget_line,
+                lv_allItems,
+                parser,
+                curItem,
+                getNewLineListener(),
+                getEveryItemListener(),
+                getEveryItemLongClickListener()
+        );
         lv_allItems.setAdapter(aa);
         db.insertAdapter(aa);
 
         // set the title
-        setTitle(getString(R.string.itemactivity_title) + " - " + budgetItemName);
+        setTitle(getString(R.string.itemactivity_title) + " - " + curItem.getPretty_name());
 
+        // set font for the headers
+        Typeface font = Settings.getInstance().getFont();
+        ((TextView) findViewById(R.id.tv_itemactivity_header_details)).setTypeface(font);
+        ((TextView) findViewById(R.id.tv_itemactivity_header_title)).setTypeface(font);
+        ((TextView) findViewById(R.id.tv_itemactivity_header_date)).setTypeface(font);
+        ((TextView) findViewById(R.id.tv_itemactivity_header_amount)).setTypeface(font);
 
         // create the "load previous" button at top
         if (parser.moreInfoAtAllThenAtNonArchived()) { // if exist earlier lines
             final TextView tv_loadearlier_title = (TextView) findViewById(R.id.tv_itemactivity_loadearlier);
             tv_loadearlier_title.setVisibility(View.VISIBLE);
+            tv_loadearlier_title.setTypeface(Settings.getInstance().getFont());
             tv_loadearlier_title.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -125,7 +144,7 @@ public class ItemActivity extends AppCompatActivity {
         float maxVal = curItem.getAuto_update_amount();
         float curVal = curItem.getCur_value();
         final float percentage = curVal / maxVal;
-        Log.d(TAG, "max: " + maxVal + ", cur: " + curVal + ", per: " + percentage);
+        // Log.d(TAG, "max: " + maxVal + ", cur: " + curVal + ", per: " + percentage);
         if (curVal > maxVal) return; // we have nothing to do, leave it with the crown
 
 
@@ -138,7 +157,7 @@ public class ItemActivity extends AppCompatActivity {
             public void onTick(long l) {
                 if (progressPercentage > percentage) {
                     iv_sandclock.setImageResource(SANDCLOCK_FRAMES[index]);
-                    Log.d(TAG, "orgPer: " + percentage + ", curPer: " + progressPercentage + ", i: " + index);
+                    // Log.d(TAG, "orgPer: " + percentage + ", curPer: " + progressPercentage + ", i: " + index);
                     progressPercentage -= progressJumps;
                     index += 1;
                 }
@@ -239,9 +258,15 @@ public class ItemActivity extends AppCompatActivity {
 
     public static void createItemInfoDialog(Context context, String budgetItemName) {
         final BudgetItem budgetItem= new DatabaseHandler(context).getBudgetItem(budgetItemName);
+        final String title;
+        if (budgetItem.getPretty_name().length() == 0) {
+            title = context.getString(R.string.title_empty_line);
+        } else {
+            title = budgetItem.getPretty_name();
+        }
         new AlertDialog.Builder(context)
-                .setTitle(budgetItemName + context.getString(R.string.title_details))
-                .setMessage(context.getString(R.string.misc_updated) + budgetItem.getLocalizedAuto_update(context) + ' '+context.getString(R.string.misc_updateweekly_for_amountofmoney)+' ' + budgetItem.getAuto_update_amount() + ' ' +context.getString(R.string.misc_currency) +".\n" +context.getString(R.string.misc_current_amount) + ": " + budgetItem.getCur_value() + "\n\n(" + context.getString(R.string.misc_inner_info_id_is) + " " + budgetItem.getId() + ")")
+                .setTitle(title + ' ' + context.getString(R.string.title_details))
+                .setMessage(context.getString(R.string.misc_updated) + budgetItem.getLocalizedAuto_update(context) + ' '+context.getString(R.string.misc_updateweekly_for_amountofmoney)+' ' + budgetItem.getAuto_update_amount() + ' ' +context.getString(R.string.misc_currency) +".\n" +context.getString(R.string.misc_current_amount) + ": " + budgetItem.getCur_value())
                 .setCancelable(true)
                 .setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
@@ -331,7 +356,7 @@ public class ItemActivity extends AppCompatActivity {
                                 Intent addLineIntent = new Intent(ItemActivity.this, MessWithLineDialog.class);
                                 addLineIntent.putExtra(MessWithLineDialog.ITEM_NAME, budgetItemName);
                                 addLineIntent.putExtra(MessWithLineDialog.LINE_ACTUAL, line);
-                                Log.d(TAG, "Starting activity MessWithLineDialog");
+                                // Log.d(TAG, "Starting activity MessWithLineDialog");
                                 startActivityForResult(addLineIntent, EDIT_LINE_REQUEST);
                             }
                         })
@@ -378,5 +403,38 @@ public class ItemActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(ITEM_NAME, budgetItemName);
         super.onSaveInstanceState(outState);
+    }
+
+    public View.OnClickListener getEveryItemListener() {
+        final Context context = this;
+        final BudgetLine line;
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BudgetLine line = (BudgetLine) view.getTag(R.id.TAG_BUDGET_LINE);
+                createInfoDialog(line);
+            }
+
+            private void createInfoDialog(final BudgetLine line) {
+                String title = line.getTitle();
+                String msg = line.getDetails();
+                if (msg.length() > 0) { msg += "\n\n"; }
+                msg +=         getString(R.string.title_amount) + ' ' + line.getAmount() +
+                        "\n" + getString(R.string.title_date) + ' ' + Utils.millisecToDate(line.getDate()) +
+                        "\n" + getString(R.string.title_type) + ' ' + line.getEventType().getLocalizedName(context);
+
+                new AlertDialog.Builder(context)
+                        .setTitle(title)
+                        .setMessage(msg)
+                        .setCancelable(true)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .show();
+            }
+        };
     }
 }

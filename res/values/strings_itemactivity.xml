@@ -6,4 +6,5 @@
     <string name="itemactivity_header_title">Title</string>
     <string name="itemactivity_header_Amount">$$$</string>
     <string name="itemactivity_loadearlier">Load archived lines…</string>
+    <string name="itemactivity_header_details">Details</string>
 </resources>

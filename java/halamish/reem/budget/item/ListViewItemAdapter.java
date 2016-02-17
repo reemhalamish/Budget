@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -12,11 +14,12 @@ import java.util.List;
 
 import halamish.reem.budget.MyAdapter;
 import halamish.reem.budget.R;
+import halamish.reem.budget.misc.Settings;
 import halamish.reem.budget.data.BudgetItem;
 import halamish.reem.budget.data.BudgetLine;
 import halamish.reem.budget.data.BudgetLinesParser;
 import halamish.reem.budget.data.DatabaseHandler;
-import halamish.reem.budget.Utils;
+import halamish.reem.budget.misc.Utils;
 
 /**
  * Created by Re'em on 10/17/2015.
@@ -25,9 +28,11 @@ import halamish.reem.budget.Utils;
  */
 public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
     private static final String TAG = "listAdapter";
+    private static final long SUM_ANIMATION_CYCLE_DUR_MS = 1000;
     private ListView actual_list;
     private List<BudgetLine> allItems;
     private View.OnClickListener newLineListener;
+    private View.OnClickListener everyItemListener;
     private BudgetItem item;
     private BudgetLinesParser parser;
     private boolean loadNonArchivedOnly;
@@ -39,6 +44,7 @@ public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
                                BudgetLinesParser parser,
                                BudgetItem item,
                                View.OnClickListener newLineListener,
+                               View.OnClickListener everyItemListener,
                                View.OnLongClickListener everyItemLongClickListener) {
         super(context, resource, parser.getNonArchived());
         this.parser = parser;
@@ -47,6 +53,7 @@ public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
         this.newLineListener = newLineListener;
         this.actual_list = list;
         this.loadNonArchivedOnly = true;
+        this.everyItemListener = everyItemListener;
         this.everyItemLongClickListener = everyItemLongClickListener;
         inflater = LayoutInflater.from(getContext());
         scrollToPosition(getCount() - 1);
@@ -65,25 +72,33 @@ public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-//        Log.d(TAG, "calling position " + position);
+//        position -= 1;
 
 //        if (loadNonArchivedOnly && parser.moreInfoAtAllThenAtNonArchived())
-//            position -= 1;
 
 //        if (position == -1) {
 //            return loadEarlierView(convertView, parent);
 //        }
 
-        if (position >= allItems.size()) {
-            return addItemView(convertView, parent);
-        }
+//        // header
+//        if (position == -1) return headerView(convertView, parent);
 
-        View view = convertView;
-        if (view == null || view.getId() != R.id.rl_line_main) {
+        // sum
+        if (position == allItems.size()) return sumView(convertView, parent);
+
+        // "add more?"
+        if (position > allItems.size()) return addItemView(convertView, parent);
+
+        View view;
+        view = convertView;
+        if (convertView == null || convertView.getId() != R.id.rl_line_main) {
             view = inflater.inflate(R.layout.budget_line, parent, false);
+        } else {
+            view = convertView;
+            view.setAnimation(null); // clear the "sum" animation
         }
-        view.setOnClickListener(null);
-        view.setOnLongClickListener(everyItemLongClickListener);
+        view.setOnClickListener     (everyItemListener);
+        view.setOnLongClickListener (everyItemLongClickListener);
 
 
 //        LATERON
@@ -96,29 +111,33 @@ public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
 
 
 
-        // TODO add listener that will open line with all details
         BudgetLine curLine = allItems.get(position);
         view.setTag(R.id.TAG_BUDGET_LINE, curLine);
 
         TextView txtTitle = (TextView) view.findViewById(R.id.tv_line_title);
         TextView txtAmount = (TextView) view.findViewById(R.id.tv_line_amount);
-//        TextView txtDetails = (TextView) view.findViewById(R.id.tv_line_details);
+        TextView txtDetails = (TextView) view.findViewById(R.id.tv_line_details);
         TextView txtDate = (TextView) view.findViewById(R.id.tv_line_date);
 //        TextView txtEventType = (TextView) view.findViewById(R.id.tv_line_event_type);
 
         txtTitle.setText(curLine.getTitle());
         txtAmount.setText(String.valueOf(curLine.getAmount()));
         txtDate.setText(Utils.millisecToDate(curLine.getDate()));
-//        txtDetails.setText(curLine.getDetails());
+        txtDetails.setText(curLine.getDetails());
 //        txtEventType.setText(curLine.getEventType().name());
 
         if (curLine.isArchived()) {
             txtTitle.setTextColor(Color.GRAY);
             txtAmount.setTextColor(Color.GRAY);
             txtDate.setTextColor(Color.GRAY);
+            txtDetails.setTextColor(Color.GRAY);
         } else {
+            txtTitle.setTextColor(Color.BLACK);
+            txtDate.setTextColor(Color.BLACK);
+            txtDetails.setTextColor(Color.BLACK);
+
             if (curLine.getAmount() >= 0) {
-                txtAmount.setTextColor(Color.GREEN);
+                txtAmount.setTextColor(Color.parseColor("#006900"));
             } else {
                 txtAmount.setTextColor(Color.RED);
             }
@@ -127,6 +146,91 @@ public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
         view.setTag(position);
         return view;
     }
+
+    private View sumView(View convertView, ViewGroup parent) {
+        final View currentBalance;
+        if (convertView == null || convertView.getId() != R.id.rl_line_main) {
+            currentBalance = inflater.inflate(R.layout.budget_line, parent, false);
+        } else {
+            currentBalance = convertView;
+        }
+        TextView txtTitle = (TextView) currentBalance.findViewById(R.id.tv_line_title);
+        TextView txtAmount = (TextView) currentBalance.findViewById(R.id.tv_line_amount);
+        TextView txtDetails = (TextView) currentBalance.findViewById(R.id.tv_line_details);
+        TextView txtDate = (TextView) currentBalance.findViewById(R.id.tv_line_date);
+
+
+        txtDate.setText(    "");
+        txtDetails.setText("");
+        txtAmount.setText("" + parser.getNonArchivedAmount());
+        txtAmount.setTextColor(Color.BLACK);
+        txtTitle.setText(getContext().getString(R.string.activity_item_cur_balance));
+        txtTitle.setTextColor(Color.BLACK);
+
+        if (Settings.getInstance().isActivity_item_sum_flickering()) {
+            startFlickeringEffect(currentBalance);
+        }
+
+        currentBalance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentBalance.setAnimation(null);
+                currentBalance.setAlpha(1);
+                // ONEDAY add here some nice chart or something?
+            }
+        });
+        currentBalance.setOnLongClickListener(null);
+        return currentBalance;
+    }
+
+    public static void startFlickeringEffect(final View sumView) {
+        final AlphaAnimation fadeIn = new AlphaAnimation( 1.0f , 0.0f );
+        final AlphaAnimation fadeOut = new AlphaAnimation(0.0f , 1.0f );
+        fadeIn.setDuration(SUM_ANIMATION_CYCLE_DUR_MS);
+        fadeOut.setDuration(SUM_ANIMATION_CYCLE_DUR_MS);
+        fadeIn.setAnimationListener(new Animation.AnimationListener() {
+            public void onAnimationStart(Animation animation) {
+            }
+
+            public void onAnimationEnd(Animation animation) {
+                sumView.startAnimation(fadeOut);
+            }
+
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        fadeOut.setAnimationListener(new Animation.AnimationListener() {
+            public void onAnimationStart(Animation animation)   {}
+            public void onAnimationEnd(Animation animation)     {sumView.startAnimation(fadeIn);}
+            public void onAnimationRepeat(Animation animation)  {}
+        });
+        sumView.startAnimation(fadeIn);
+    }
+
+//    private View headerView(View convertView, ViewGroup parent) {
+//        View view = convertView;
+//        if (view == null || view.getId() != R.id.rl_line_main) {
+//            view = inflater.inflate(R.layout.budget_line, parent, false);
+//        }
+//
+//        TextView txtTitle = (TextView) view.findViewById(R.id.tv_line_title);
+//        TextView txtAmount = (TextView) view.findViewById(R.id.tv_line_amount);
+//        TextView txtDetails = (TextView) view.findViewById(R.id.tv_line_details);
+//        TextView txtDate = (TextView) view.findViewById(R.id.tv_line_date);
+//
+//        txtTitle.setText(R.string.itemactivity_header_title);
+//        txtAmount.setText(R.string.itemactivity_header_Amount);
+//        txtDate.setText(R.string.itemactivity_header_date);
+//        txtDetails.setText(R.string.itemactivity_header_details);
+//
+//        txtTitle.setTextColor(Color.BLACK);
+//        txtDate.setTextColor(Color.BLACK);
+//        txtDetails.setTextColor(Color.BLACK);
+//        txtAmount.setTextColor(Color.BLACK);
+//
+//
+//        return view;
+//    }
 
 //    private View loadEarlierView(View convertView, final ViewGroup parent) {
 //        if (convertView == null || convertView.getId() != R.id.rl_line_main_loadealier) {
@@ -152,6 +256,7 @@ public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
         }
         TextView txtAdd = (TextView) view.findViewById(R.id.tv_line_addline_title);
         txtAdd.setTextColor(Color.BLUE);
+        txtAdd.setTypeface(Settings.getInstance().getFont());
         view.setOnClickListener(newLineListener);
         view.setOnLongClickListener(null);
         return view;
@@ -160,7 +265,7 @@ public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
     @Override
     public int getCount() {
         int retval;
-        retval = this.allItems.size() + 1; // only "add new" at bottom
+        retval = this.allItems.size() + 2; // "sum" + "add new" at bottom
         return retval;
     }
 
@@ -174,7 +279,7 @@ public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
 
     public void loadAll() {
         ListViewItemAdapter.this.loadNonArchivedOnly = false;
-        scrollToPosition(parser.getStartPositionOfNonArchivedInAll());
+        scrollToPosition(parser.getLastPositionOfArchived());
         loadFromParserAndNotify();
     }
 
@@ -195,14 +300,3 @@ public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
         notifyDataSetChanged();
     }
 }
-
-/*
-TODO:
-
- add first row in adapter ("load archived") that will look better then just gray
-
- somehow insert details inside (maybe at landscape?)
-
- make the sandclock and the plus look nice together (change the plus to gray-scale? colorize the sandclock?)
-
- */

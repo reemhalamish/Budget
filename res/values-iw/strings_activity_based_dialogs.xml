@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_hint_amount">סכום</string>
+    <string name="dialog_hint_budget">תקציב</string>
+    <string name="dialog_hint_cbox_monthly_weekly">תקציב חודשי? (השאירו ריק בשביל שבועי)</string>
+    <string name="dialog_hint_details">פרטים (אין חובה למלא)</string>
+    <string name="dialog_hint_expense_cbox">הוצאה? (השאירו ריק בשביל הכנסה)</string>
+    <string name="dialog_hint_name">שם בשביל הסעיף</string>
+    <string name="dialog_hint_title">כותרת</string>
+
+    <string name="activity_item_cur_balance">יתרה נוכחית</string>
+</resources>

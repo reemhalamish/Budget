@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="action_settings">Settings</string>
+    <string name="action_report">Generate Report</string>
+    <string name="action_choose_multiple">Select multiple items</string>
+    <string name="action_contact_us">Contact Us!</string>
+    <string name="action_item_clear">Clear item</string>
     <string name="action_item_show_details">Show Details</string>
     <string name="action_item_edit">Edit item</string>
     <string name="action_item_del">Delete item</string>
-    <string name="action_report">Generate Report</string>
-    <string name="action_choose_multiple">Select multiple items</string>
-    <string name="action_item_clear">Clear item</string>
 </resources>

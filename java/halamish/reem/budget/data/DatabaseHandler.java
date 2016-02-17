@@ -6,7 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
-import android.util.Log;
+
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +16,7 @@ import java.util.List;
 
 import halamish.reem.budget.MyAdapter;
 import halamish.reem.budget.R;
-import halamish.reem.budget.Utils;
+import halamish.reem.budget.misc.Utils;
 
 /**
  * Created by Re'em on 10/17/2015.
@@ -25,15 +26,14 @@ import halamish.reem.budget.Utils;
 public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHandler";
 
-    private static boolean dbIsReady = false;
-
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
     // version 4: added column MA_KEY_ORDER_ID
     // version 5: added column RE_KEY_EVENT_TYPE and switched column RE_KEY_DATE to INTEGER
     // version 6: column MA_KEY_CUR_VALUE only stores values from non-Archived lines
     // version 7: after every AUTO_UPDATE budget line there is MOVER_FROM_LAST budget line
+    // version 8: added column MA_KEY_NAME_TO_SHOW to master table
 
     // Database Name
     private static final String DATABASE_NAME = "budget";
@@ -48,6 +48,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String MA_KEY_AUTO_UPDATE = "auto_update";
     private static final String MA_KEY_UPDATE_AMOUNT = "auto_update_amount";
     private static final String MA_KEY_ORDER_ID = "order_by";
+    private static final String MA_KEY_NAME_TO_SHOW = "name_to_show";
 
     // regular table (i.e. action submitted) Columns names
     private static final String RE_KEY_TITLE = "title";
@@ -70,15 +71,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_ALL_TALBES + "(" +
+        String CREATE_MAIN_TABLE = "CREATE TABLE " + TABLE_ALL_TALBES + "(" +
                 MA_KEY_ID + " INTEGER PRIMARY KEY," +
                 MA_KEY_NAME + " TEXT," +
                 MA_KEY_CUR_VALUE + " INTEGER," +
                 MA_KEY_AUTO_UPDATE + " TEXT," +
                 MA_KEY_UPDATE_AMOUNT + " INTEGER," +
-                MA_KEY_ORDER_ID + " INTEGER" +
+                MA_KEY_ORDER_ID + " INTEGER," +
+                MA_KEY_NAME_TO_SHOW + " TEXT" +
                 ")";
-        sqLiteDatabase.execSQL(CREATE_CONTACTS_TABLE);
+        sqLiteDatabase.execSQL(CREATE_MAIN_TABLE);
         notifyAdapters();
     }
 
@@ -125,13 +127,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             db.close();
     }
 
-    /**
-     * 1. inits the amount of budget inside every item based on the sum of the lines
-     */
-    public void init() {
-//        _dbUpdateAllItemsCurAmount();
-//        notifyAdapters();
-    }
 
     private void _dbUpdateAllItemsCurAmount() {
         SQLiteDatabase db = getWritableDatabase();
@@ -231,20 +226,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (!externalDB) {
             db = this.getWritableDatabase();
         }
+        item.setName(_helper_getNextItemName(db));
 
-        if (_dbCheckIfInside(item, db)) {  // just update the item
-            updateBudgetItem(item, item, db);
+        if (_dbCheckIfInside(item, db)) {
+            Toast.makeText(context, "Can't add item - name already exists!", Toast.LENGTH_LONG).show();
             if (!externalDB) {
                 db.close();
             }
             return;
         }
         ContentValues values = new ContentValues();
-        values.put(MA_KEY_NAME, item.getName());
+        values.put(MA_KEY_NAME, _helper_getNextItemName(db));
         values.put(MA_KEY_CUR_VALUE, 0);
         values.put(MA_KEY_AUTO_UPDATE, item.getAuto_update());
         values.put(MA_KEY_UPDATE_AMOUNT, item.getAuto_update_amount());
-        values.put(MA_KEY_ORDER_ID, helper_getHighestID(db) + 1);
+        values.put(MA_KEY_ORDER_ID, _helper_getHighestID(db) + 1);
+        values.put(MA_KEY_NAME_TO_SHOW, item.getPretty_name());
 
 
         // Inserting row to the main table
@@ -256,10 +253,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             db.close(); // Closing database connection
         }
 
-        notifyAdapters();
-
     }
 
+    private String _helper_getNextItemName(SQLiteDatabase db) {
+        return MA_KEY_NAME + (_helper_getHighestID(db) + 1);
+    }
 
 
     // external!
@@ -280,7 +278,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         MA_KEY_CUR_VALUE,
                         MA_KEY_AUTO_UPDATE,
                         MA_KEY_UPDATE_AMOUNT,
-                        MA_KEY_ORDER_ID}
+                        MA_KEY_ORDER_ID,
+                        MA_KEY_NAME_TO_SHOW}
                 , MA_KEY_NAME + "=?",
                 new String[]{String.valueOf(budgetItemName)}, null, null, null, null);
         if (cursor != null) {
@@ -292,7 +291,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     cursor.getInt(2),
                     cursor.getString(3),
                     cursor.getInt(4),
-                    cursor.getInt(5)
+                    cursor.getInt(5),
+                    cursor.getString(6)
             );
             cursor.close();
             if (!externalDB)
@@ -312,7 +312,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
         // Select All Query
-        String selectQuery = "SELECT  * FROM " + TABLE_ALL_TALBES + " ORDER BY " + MA_KEY_ORDER_ID;
+        String selectQuery = "SELECT * FROM " + TABLE_ALL_TALBES + " ORDER BY " + MA_KEY_ORDER_ID;
 
         if (!externalDB)
             db = getWritableDatabase();
@@ -328,11 +328,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 BudgetItem item = new BudgetItem();
-                item.setId(Integer.parseInt(cursor.getString(0)));
+                item.setId(cursor.getInt(0));
                 item.setName(cursor.getString(1));
-                item.setCur_value(Integer.parseInt(cursor.getString(2)));
+                item.setCur_value(cursor.getInt(2));
                 item.setAuto_update(cursor.getString(3));
-                item.setAuto_update_amount(Integer.parseInt(cursor.getString(4)));
+                item.setAuto_update_amount(cursor.getInt(4));
+                item.setPretty_name(cursor.getString(6)); // 5 is ORDER_BY
 
                 // Adding item to list
                 budgetItems.add(item);
@@ -347,14 +348,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     // Updating single item
     public int updateBudgetItem(BudgetItem old_item, BudgetItem new_item, SQLiteDatabase db) {
-        Log.d(TAG, "update method is : " + new_item.getAuto_update());
+        // Log.d(TAG, "update method is : " + new_item.getAuto_update());
         int retval;
         boolean externalDb = db != null;
         if (!externalDb)
             db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(MA_KEY_NAME, new_item.getName());
+        values.put(MA_KEY_NAME_TO_SHOW, new_item.getPretty_name());
         values.put(MA_KEY_AUTO_UPDATE, new_item.getAuto_update());
         values.put(MA_KEY_UPDATE_AMOUNT, new_item.getAuto_update_amount());
 
@@ -364,16 +365,35 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 new String[] { old_item.getName() });
 
         // edit item name if necessary
+        // should not happen in normal state, but just in case...
+        if (new_item.getName() == null) new_item.setName(old_item.getName());
         if (! old_item.getName().equals(new_item.getName())) {
             String rename_table = "ALTER TABLE " + old_item.getName() + " RENAME TO " + new_item.getName();
             db.execSQL(rename_table);
 
         }
 
+        // add row of increase\decrease if necessary
+        int diff = new_item.getAuto_update_amount() - old_item.getAuto_update_amount();
+        if (diff != 0) {
+            String title = (diff > 0) ? context.getString(R.string.db_budget_increase) : context.getString(R.string.db_budget_decrease);
+            // max = (a > b) ? a : b;
+            String details = context.getString(R.string.db_automatic);
+            BudgetLine new_line = new BudgetLine(
+                    title,
+                    details,
+                    diff,
+                    Utils.getMillisecondNow(),
+                    BudgetLine.BudgetLineEventType.BUDGET_CHANGE_AMOUNT
+            );
+
+            tblAddBudgetLineActual(new_item, new_line, db);
+        }
+
         if (! externalDb)
             db.close();
 
-        if (! old_item.getName().equals(new_item.getName()))
+        if (! old_item.getPretty_name().equals(new_item.getPretty_name()))
             notifyAdapters();
         return retval;
     }
@@ -695,7 +715,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         for (BudgetLine line : budgetLines) {
             if (line.getTitle() == null) throw new AssertionError(line.getDetails());
         }
-        // return contact list
+        // return budgetLines list
         return budgetLines;
     }
 
@@ -723,9 +743,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (!externalDB)
             db.close();
 
-        Log.d(TAG, "adapters connected:");
-        for (MyAdapter adapter : s_adapters)
-            Log.d(TAG, adapter.toString());
+        // Log.d(TAG, "adapters connected:");
+        // for (MyAdapter adapter : s_adapters)
+            // Log.d(TAG, adapter.toString());
         notifyAdapters();
         return retval;
     }
@@ -776,7 +796,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public int tblGetCurAmount(BudgetItem item, SQLiteDatabase db) {
         int curAmount = new BudgetLinesParser(tblGetAllBudgetLines(item, db)).getNonArchivedAmount();
-        Log.d(TAG, "at item " + item.getName() + ", curAmount is " + curAmount);
+        // Log.d(TAG, "at item " + item.getName() + ", curAmount is " + curAmount);
         return curAmount;
     }
 
@@ -798,10 +818,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String itemTable = item.getName();
         int lastValue = 0;
         for (BudgetLine line : lines) {
-            if (line.getTitle().toLowerCase().startsWith("budget")) {
-                tblDeleteTable(item, db);
-                tblCreateTable(item, db);
-            }
+//            if (line.getTitle().toLowerCase().startsWith("budget")) {
+////                tblDeleteTable(item, db);
+////                tblCreateTable(item, db);
+//            }
 //            long milliseconds;
 ////            try {
 ////                Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(line.getDate());
@@ -822,8 +842,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put(RE_KEY_DETAILS, line.getDetails());
             values.put(RE_KEY_AMOUNT, line.getAmount());
             values.put(RE_KEY_DATE, line.getDate());
-            values.put(RE_KEY_EVENT_TYPE, line.getEventType().toInt());
-
+            if (line.getTitle().toLowerCase().startsWith("budget")) {
+                values.put(RE_KEY_EVENT_TYPE, BudgetLine.BudgetLineEventType.BUDGET_CREATED.toInt());
+            } else {
+                values.put(RE_KEY_EVENT_TYPE, line.getEventType().toInt());
+            }
             // Inserting row to the relevant table
             db.insert(itemTable, null, values);
 //
@@ -861,7 +884,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * @param db needs to be openeed! and not null!
      * @return highest ID at TABLE_ALL_TABLES
      */
-    private int helper_getHighestID(@NonNull SQLiteDatabase db) {
+    private int _helper_getHighestID(@NonNull SQLiteDatabase db) {
         final String MY_QUERY = "SELECT MAX(" + MA_KEY_ID + ") FROM " + TABLE_ALL_TALBES;
         Cursor cur = db.rawQuery(MY_QUERY, null);
         cur.moveToFirst();

@@ -7,15 +7,21 @@
     <string name="title_delete_multiple">אישור מחיקת פריטים מרובים</string>
     <string name="title_delete_confirm">אישור מחיקה</string>
     <string name="title_empty_line">שורה ריקה</string>
-    <string name="title_details">" פרטים:"</string>
-    <string name="title_add_new">בא לך להוסיף חדש?</string>
+    <string name="title_details">"פרטים:"</string>
+    <string name="title_add_new_budgetitem">סעיף חדש?</string>
+    <string name="title_add_new_budgetline">שורה חדשה?</string>
+    <string name="msg_delete_are_you_sure">האם ברצונך למחוק?</string>
     <string name="msg_delete_confirm">האם ברצונך למחוק?</string>
+    <string name="msg_delete_confirm_multiple">האם ברצונך למחוק את הפריטים הבאים?</string>
     <string name="msg_delete_cant_be_undone">מחיקה לא ניתנת לשחזור!</string>
     <string name="msg_saved_under_folder">הדוח נשמר בתיקייה</string>
     <string name="msg_item_success_edit">הפריט נערך בהצלחה!</string>
     <string name="msg_item_success_add">הפריט נוסף בהצלחה!</string>
-    <string name="msg_delete_are_you_sure">האם ברצונך למחוק?</string>
     <string name="msg_line_success_edit">השורה נערכה!</string>
     <string name="msg_line_success_add">השורה נוספה!</string>
+    <string name="msg_settings_success_changed">ההגדרות שונו בהצלחה!</string>
     <string name="msg_line">"שורה: "</string>
+    <string name="title_amount">סכום:</string>
+    <string name="title_date">תאריך:</string>
+    <string name="title_type">סוג:</string>
 </resources>

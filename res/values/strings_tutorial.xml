@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tut_v0_exp1">here is a simple explanation, just before we start:</string>
+
+    <string name="tut_v1_exp1">Create a Budget for every aspect of your life, or only for the fields that you can\'t see clearly where your money has disappeared in.</string>
+    <string name="tut_v1_exp2">Instantly see how much money left in that budget!</string>
+    <string name="tut_v1_entry1">Supermarket</string>
+    <string name="tut_v1_entry2">Clothes on a sale</string>
+    <string name="tut_v1_entry3">Snacks</string>
+
+    <string name="tut_v2_exp1">See relevant info about your budget easily with the details!</string>
+    <string name="tut_v2_exp2">sand clock gives a nice estimation about how much money left in the budget</string>
+    <string name="tut_v2_entry1_title">Machine coffee</string>
+    <string name="tut_v2_entry1_details">that was a great one</string>
+    <string name="tut_v2_entry2_title">Snacks</string>
+    <string name="tut_v2_entry2_details">ok, I\'m a child. I admit!</string>
+
+    <string name="tut_v3_ready">Feel Ready?</string>
+    <string name="tut_v3_go_on">Go On Then!</string>
+    <string name="tut_v3_start">Start</string>
+
+</resources>

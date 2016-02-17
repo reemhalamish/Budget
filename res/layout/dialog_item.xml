@@ -8,6 +8,7 @@
     style="@style/BudgetAppDialog"
     >
 
+    <!--ONEDAY change all text gravity at the views here here to RIGHT when using rtl (hebrew)-->
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,7 +16,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:hint="Name"
+        android:hint="@string/dialog_hint_name"
+        android:gravity="start"
         />
 
     <EditText
@@ -26,13 +28,13 @@
         android:id="@+id/edt_item_amount"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:hint="budget"
+        android:hint="@string/dialog_hint_budget"
         android:layout_below="@+id/edt_item_title" />
 
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="monthly budget? (leave empty for weekly)"
+        android:text="@string/dialog_hint_cbox_monthly_weekly"
         android:id="@+id/cbx_item_monthly_weekly"
         android:layout_below="@+id/edt_item_amount"
         android:layout_alignParentLeft="true"
@@ -42,7 +44,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add!"
+        android:text="@string/dialog_btn_action_add"
         android:id="@+id/btn_item_action"
         android:layout_below="@+id/cbx_item_monthly_weekly"
         android:layout_alignParentLeft="true"

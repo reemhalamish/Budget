@@ -1,7 +1,8 @@
 package halamish.reem.budget.data;
 
+import android.content.Context;
 import android.os.Parcelable;
-import android.util.Log;
+
 
 import java.io.Serializable;
 
@@ -16,7 +17,8 @@ public class BudgetLine implements Serializable{
         USER_INPUT(1),
         ARCHIVE_ENDS_HERE(2),
         BUDGET_CREATED(3),
-        MOVE_FROM_LAST_TIME(4);
+        MOVE_FROM_LAST_TIME(4),
+        BUDGET_CHANGE_AMOUNT(5);
 
         private int value;
         BudgetLineEventType(int val){
@@ -36,6 +38,11 @@ public class BudgetLine implements Serializable{
         }
         public static BudgetLineEventType getEnum(String _id) {
             return getEnum(Integer.parseInt(_id));
+        }
+
+        public String getLocalizedName(Context context) {
+            return toString();
+            // ONEDAY support hebrew or something...
         }
     }
 
@@ -118,7 +125,7 @@ public class BudgetLine implements Serializable{
     }
 
     public void logMe() {
-        Log.d(TAG, "BudgetLine. id: " + id + ", amount: " + amount + ", eventType: " + eventType.name() + ", Title: " + title + ", details: " + details);
+        // Log.d(TAG, "BudgetLine. id: " + id + ", amount: " + amount + ", eventType: " + eventType.name() + ", Title: " + title + ", details: " + details);
     }
 
     // is set by the parser, this info isn't stored at the SQLite db!!

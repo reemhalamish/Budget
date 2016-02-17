@@ -5,4 +5,6 @@
     <string name="db_automatic">אוטומטי</string>
     <string name="budgetitem_weekly">שבועי</string>
     <string name="budgetitem_monthly">חודשי</string>
+    <string name="db_budget_increase">הגדלת תקציב</string>
+    <string name="db_budget_decrease">הקטנת תקציב</string>
 </resources>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rl_line_main"
+    android:layout_margin="10dp">
+
+    <!-- AT ANY CHANGE HERE YOU SHOULD CHANGE THE HEADER ROW AS WELL!! -->
+
+    <TextView
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:gravity="right"
+        android:textAlignment="gravity"
+        android:text="35$"
+        android:id="@+id/tv_line_amount"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+    <TextView
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="01/01/1970"
+        android:id="@+id/tv_line_date"
+        android:gravity="center"
+        android:padding="5dp"
+        android:maxLines="1"
+
+
+        android:layout_alignBottom="@+id/tv_line_amount"
+        android:layout_toRightOf="@+id/tv_line_amount"
+        android:layout_toEndOf="@+id/tv_line_amount" />
+
+    <TextView
+    android:layout_width="150dp"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:text="Title"
+    android:layout_toEndOf="@+id/tv_line_date"
+    android:layout_toRightOf="@+id/tv_line_date"
+    android:id="@+id/tv_line_title"
+    android:gravity="start"
+    android:textAlignment="gravity"
+    android:maxLines="1"
+    android:ellipsize="end"
+    android:textStyle="bold"
+    android:paddingEnd="10dp"
+    />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="details"
+        android:layout_toEndOf="@+id/tv_line_title"
+        android:id="@+id/tv_line_details"
+        android:gravity="start"
+        android:textAlignment="gravity"
+        android:maxLines="1"
+        android:layout_alignParentRight="true"
+
+        />
+    <!--android:maxLength="20"-->
+
+
+
+</RelativeLayout>

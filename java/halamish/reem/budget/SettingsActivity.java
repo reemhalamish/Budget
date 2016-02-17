@@ -5,10 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -16,11 +13,11 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import java.util.Set;
-
 import halamish.reem.budget.main.MainActivity;
+import halamish.reem.budget.misc.Settings;
+import halamish.reem.budget.style.BudgetStyleActivity;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BudgetStyleActivity {
 
     public static final String SHUTDOWN_THE_APP_EXTRA = "shut_me_down";
 
@@ -34,9 +31,37 @@ public class SettingsActivity extends AppCompatActivity {
 
         initiateBalanceCbx(context, settings);
         initiateLanguageInput(context, settings);
+        initiateFlickeringSum(context, settings);
 
 
+    }
 
+    private void initiateFlickeringSum(final Context context, final Settings settings) {
+        CheckBox cbx_flickeringSum = ((CheckBox) findViewById(R.id.cbx_settings_flickering_sum));
+        cbx_flickeringSum.setChecked(settings.isActivity_item_sum_flickering());
+        cbx_flickeringSum.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                settings.setActivity_item_sum_flickering(b);
+                Toast.makeText(context, getString(R.string.msg_settings_success_changed), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        findViewById(R.id.iv_settings_qmark_flickering_sum).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(context)
+                        .setMessage(R.string.settings_explanation_flickering_sum)
+                        .setCancelable(true)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .show();
+            }
+        });
     }
 
     private void initiateLanguageInput(final Context context, final Settings settings) {
@@ -51,12 +76,10 @@ public class SettingsActivity extends AppCompatActivity {
                     case R.id.rb_settings_lng_heb_uni:
                         languageChanged = settings.setUserLanguage(Settings.Language.HEBREW_UNISEX);
                         break;
-                    case R.id.rb_settings_lng_heb_fem:
-                        languageChanged = settings.setUserLanguage(Settings.Language.HEBREW_FEMALE);
-                        break;
-                    case R.id.rb_settings_lng_heb_male:
-                        Toast.makeText(context, "TODO!", Toast.LENGTH_SHORT).show(); // TODO implement
-                        return;
+//                    case R.id.rb_settings_lng_heb_fem:
+//                    case R.id.rb_settings_lng_heb_male:
+//                        Toast.makeText(context, "ONEDAY!", Toast.LENGTH_SHORT).show(); // ONEDAY implement
+//                        return;
                     case R.id.rb_settings_lng_eng:
                         languageChanged = settings.setUserLanguage(Settings.Language.ENGLISH);
                         break;
@@ -71,7 +94,7 @@ public class SettingsActivity extends AppCompatActivity {
         rg.check(radioButtonID);
 
 
-        findViewById(R.id.btn_settings_close_app).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.tv_settings_close_app).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
@@ -87,16 +110,19 @@ public class SettingsActivity extends AppCompatActivity {
         Settings.Language userLanguage = settings.getUserLanguage();
         if (userLanguage == Settings.Language.ENGLISH)
                 return R.id.rb_settings_lng_eng;
-        else if (userLanguage == Settings.Language.HEBREW_UNISEX)
+        else // if (userLanguage == Settings.Language.HEBREW_UNISEX)
             return R.id.rb_settings_lng_heb_uni;
-        else if (userLanguage == Settings.Language.HEBREW_FEMALE)
-            return R.id.rb_settings_lng_heb_fem;
-        else // male
-            return R.id.rb_settings_lng_heb_male;
+//        else if (userLanguage == Settings.Language.HEBREW_FEMALE)
+//            return R.id.rb_settings_lng_heb_fem;
+//        else // male
+//            return R.id.rb_settings_lng_heb_male;
     }
 
     private void initiateBalanceCbx(final Context context, final Settings settings) {
-        ((CheckBox) findViewById(R.id.cbx_settings_keep_from_last)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        CheckBox cbx_keepFromLast = ((CheckBox) findViewById(R.id.cbx_settings_keep_from_last));
+
+        cbx_keepFromLast.setChecked(settings.isKeepBalanceFromLast());
+        cbx_keepFromLast.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean newState) {
                 settings.setKeepBalanceFromLast(newState);
@@ -109,7 +135,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.iv_settings_qmark).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.iv_settings_qmark_keep_last_balance).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new AlertDialog.Builder(context)
@@ -149,7 +175,11 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void forceReload() {
+        Intent startFresh = getIntent();
+//        startFresh.setFlags(startFresh.getFlags() | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//        (not really needed)
         finish();
-        startActivity(getIntent());
+        startActivity(startFresh);
+        overridePendingTransition(0,0);
     }
 }
