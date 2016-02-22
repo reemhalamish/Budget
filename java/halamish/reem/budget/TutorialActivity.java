@@ -79,7 +79,7 @@ public class TutorialActivity extends BudgetBaseActivity {
         for (int i = 0; i < mProgressViews.length; i++) {
             ImageView view = mProgressViews[i];
             if (i == displayedChild) {
-                view.setImageResource(R.drawable.converted_bubble_green);
+                view.setImageResource(R.drawable.converted_bubble_white);
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mProgressViews[i].getLayoutParams();
                 params.height = PROGRESSVIEW_SIZE_BIG;
                 params.width = PROGRESSVIEW_SIZE_BIG;
