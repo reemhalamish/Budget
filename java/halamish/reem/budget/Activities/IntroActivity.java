@@ -1,4 +1,4 @@
-package halamish.reem.budget;
+package halamish.reem.budget.Activities;
 
 import android.animation.Animator;
 import android.content.Intent;
@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import halamish.reem.budget.R;
 import halamish.reem.budget.misc.BudgetApp;
 import halamish.reem.budget.misc.Settings;
 import halamish.reem.budget.style.BudgetFullScreenActivity;
@@ -85,7 +86,7 @@ public class IntroActivity extends BudgetFullScreenActivity implements FirstActi
             }, TIME_UNTIL_NEXT_TRY_MS);
             return;
         }
-        if (nextActivity.getBooleanExtra(FirstActivity.SHOULD_DISPLAY_ENGLISH_HEB_BUTTONS, true)) {
+        if (nextActivity.getBooleanExtra(SHOULD_DISPLAY_ENGLISH_HEB_BUTTONS, true)) {
             moveBubbles();
         } else {
             exit_nice();

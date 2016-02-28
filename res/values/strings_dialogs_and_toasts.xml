@@ -14,6 +14,7 @@
     <string name="msg_delete_confirm_multiple">sure to DELETE those items?</string>
     <string name="msg_delete_cant_be_undone">the deletion can\'t be undone!</string>
     <string name="msg_saved_under_folder">Saved under folder</string>
+    <string name="msg_open_folder">Open the folder</string>
     <string name="msg_item_success_edit">item edited successfully!</string>
     <string name="msg_item_success_add">item added successfully!</string>
     <string name="msg_delete_are_you_sure">sure to DELETE?</string>
@@ -24,4 +25,5 @@
     <string name="title_type">Type:</string>
     <string name="title_amount">Amount:</string>
     <string name="title_date">Date:</string>
+    <string name="msg_look_for_folder_budget">Just look for the folder \"Budget\" at your SD card (or internal memory, if no SD card exist).</string>
 </resources>

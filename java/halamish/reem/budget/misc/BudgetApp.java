@@ -10,9 +10,9 @@ import android.preference.PreferenceManager;
 
 import java.util.Calendar;
 
-import halamish.reem.budget.FirstActivity;
+import halamish.reem.budget.Activities.FirstActivity;
 import halamish.reem.budget.R;
-import halamish.reem.budget.TutorialActivity;
+import halamish.reem.budget.Activities.TutorialActivity;
 import halamish.reem.budget.data.BudgetItem;
 import halamish.reem.budget.data.BudgetLine;
 import halamish.reem.budget.data.DatabaseHandler;

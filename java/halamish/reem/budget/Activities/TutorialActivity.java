@@ -1,4 +1,4 @@
-package halamish.reem.budget;
+package halamish.reem.budget.Activities;
 
 import android.content.Intent;
 import android.content.res.Resources;
@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import halamish.reem.budget.R;
 import halamish.reem.budget.data.BudgetItem;
 import halamish.reem.budget.data.BudgetLine;
 import halamish.reem.budget.data.BudgetLinesParser;

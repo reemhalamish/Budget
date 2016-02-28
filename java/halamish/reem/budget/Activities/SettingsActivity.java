@@ -1,4 +1,4 @@
-package halamish.reem.budget;
+package halamish.reem.budget.Activities;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -13,6 +13,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import halamish.reem.budget.R;
 import halamish.reem.budget.main.MainActivity;
 import halamish.reem.budget.misc.Settings;
 import halamish.reem.budget.style.BudgetStyleActivity;

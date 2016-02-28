@@ -1,7 +1,9 @@
 package halamish.reem.budget.main;
 
 import android.animation.LayoutTransition;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
@@ -22,7 +24,7 @@ import java.util.List;
 
 import halamish.reem.budget.style.BudgetStyleActivity;
 import halamish.reem.budget.misc.Settings;
-import halamish.reem.budget.SettingsActivity;
+import halamish.reem.budget.Activities.SettingsActivity;
 import halamish.reem.budget.item.ItemActivity;
 import halamish.reem.budget.R;
 import halamish.reem.budget.data.BudgetItem;
@@ -389,7 +391,38 @@ public class MainActivity extends BudgetStyleActivity {
 
             mainWriter.flush();
             mainWriter.close();
-            Toast.makeText(this, getString(R.string.msg_saved_under_folder)+ ": " + todaysDirectory.getAbsolutePath(), Toast.LENGTH_LONG).show();
+
+            final String absolutePath = todaysDirectory.getCanonicalPath() + "/";
+            final Intent openFolderIntent = new Intent(Intent.ACTION_VIEW);
+            openFolderIntent.setDataAndType(Uri.parse(absolutePath), "resource/folder");
+            boolean folderOpenable = openFolderIntent.resolveActivityInfo(getPackageManager(), 0) != null;
+
+
+
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this)
+                    .setMessage(getString(R.string.msg_saved_under_folder) + ": \n" + absolutePath + "\n\n" + getString(R.string.msg_look_for_folder_budget))
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+
+            if (folderOpenable) {
+                dialog.setNegativeButton(R.string.msg_open_folder, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        startActivity(Intent.createChooser(openFolderIntent, getString(R.string.msg_open_folder)));
+                        dialogInterface.dismiss();
+                    }
+                });
+            }
+
+            dialog.show();
+
+            //Toast.makeText(this, getString(R.string.msg_saved_under_folder)+ ": " + todaysDirectory.getAbsolutePath(), Toast.LENGTH_LONG).show();
         }
         catch(IOException e)
         {

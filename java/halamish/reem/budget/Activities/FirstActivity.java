@@ -1,4 +1,4 @@
-package halamish.reem.budget;
+package halamish.reem.budget.Activities;
 
 import android.content.Intent;
 

@@ -232,14 +232,15 @@ public class ItemActivity extends BudgetStyleActivity {
     }
 
     private void createDeleteItemDialog(Context context, final String budgetItemName) {
+        final BudgetItem curItem = db.getBudgetItem(budgetItemName);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(getString(R.string.title_delete_confirm)+" " + budgetItemName);
+        builder.setTitle(getString(R.string.title_delete_confirm)+" " + curItem.getPretty_name());
         builder.setMessage(R.string.msg_delete_are_you_sure);
         builder.setCancelable(true);
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 finish();
-                db.deleteBudgetItem(db.getBudgetItem(budgetItemName), null);
+                db.deleteBudgetItem(curItem, null);
                 dialog.dismiss();
 
             }
