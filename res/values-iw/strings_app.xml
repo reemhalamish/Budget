@@ -7,9 +7,6 @@
     <string name="app_autoupdate_fromlast_week">יתרה מהשבוע הקודם</string>
     <string name="app_autoupdate_fromlast_month">יתרה מהחודש הקודם</string>
     <string name="app_autoupdate_fromlast_details">ניתן לשינוי דרך ההגדרות</string>
-	
-    <string name="report_header_budgetline">מספר סידורי של שורה, כמות בשקלים, סוג, כותרת, פרטים, תאריך</string>
-    <string name="report_header_budgetitem">מספר סידורי, שם, תוספת כל, תוספת בשקלים, יתרה נוכחית</string>
-    <string name="report_filename_main">_ראשי_</string>
-    <string name="report_error">שגיאה לא צפויה. נסו למחוק את התיקיה Budget בכרטיס הSD ואז לנסות שוב</string>
+    <string name="app_get_budget_app_today">הורידו את באדג\'ט מגוגל פליי!\nhttps://play.google.com/store/apps/details?id=halamish.reem.budget</string>
+
 </resources>

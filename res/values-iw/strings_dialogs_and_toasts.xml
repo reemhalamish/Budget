@@ -14,8 +14,6 @@
     <string name="msg_delete_confirm">האם ברצונך למחוק?</string>
     <string name="msg_delete_confirm_multiple">האם ברצונך למחוק את הפריטים הבאים?</string>
     <string name="msg_delete_cant_be_undone">מחיקה לא ניתנת לשחזור!</string>
-    <string name="msg_saved_under_folder">הדוח נשמר בתיקייה</string>
-    <string name="msg_open_folder">לפתיחת התיקיה</string>
     <string name="msg_item_success_edit">הפריט נערך בהצלחה!</string>
     <string name="msg_item_success_add">הפריט נוסף בהצלחה!</string>
     <string name="msg_line_success_edit">השורה נערכה!</string>

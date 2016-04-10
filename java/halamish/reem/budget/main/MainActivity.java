@@ -20,6 +20,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import halamish.reem.budget.style.BudgetStyleActivity;
@@ -354,6 +355,8 @@ public class MainActivity extends BudgetStyleActivity {
             }
             todaysDirectory.mkdirs(); // since I know it doesn't exists
 
+            final ArrayList<File> allFiles = new ArrayList<>();
+
             String mainFileName = getString(R.string.report_filename_main) + REPORT_FILE_NAME + REPORT_FILE_EXT;
             File mainReportFile = new File(todaysDirectory, mainFileName);
             FileWriter mainWriter = new FileWriter(mainReportFile);
@@ -387,10 +390,13 @@ public class MainActivity extends BudgetStyleActivity {
                 }
                 itemWriter.flush();
                 itemWriter.close();
+                allFiles.add(itemReportFile);
+
             }
 
             mainWriter.flush();
             mainWriter.close();
+            allFiles.add(mainReportFile);
 
             final String absolutePath = todaysDirectory.getCanonicalPath() + "/";
             final Intent openFolderIntent = new Intent(Intent.ACTION_VIEW);
@@ -400,21 +406,45 @@ public class MainActivity extends BudgetStyleActivity {
 
 
             AlertDialog.Builder dialog = new AlertDialog.Builder(this)
-                    .setMessage(getString(R.string.msg_saved_under_folder) + ": \n" + absolutePath + "\n\n" + getString(R.string.msg_look_for_folder_budget))
+                    .setMessage(getString(R.string.report_msg_look_for_folder_budget) + "\n\n" + getString(R.string.report_msg_saved_under_folder) + ": \n" + absolutePath)
                     .setCancelable(true)
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(R.string.report_share_as_attachment, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
+                            final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                            emailIntent.setType("text/plain");
+                            emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.report_email_subject));
+                            emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.report_email_body) + " " + Utils.getToday() + "\n\n" + getString(R.string.app_get_budget_app_today));
+                            //has to be an ArrayList
+                            ArrayList<Uri> uris = new ArrayList<>();
+                            //convert from paths to Android friendly Parcelable Uri's
+                            for (File f : allFiles)
+                            {
+                                Uri u = Uri.fromFile(f);
+                                uris.add(u);
+                            }
+                            emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+                            startActivity(Intent.createChooser(emailIntent, getString(R.string.report_share_as_attachment)));
+                            // got from http://stackoverflow.com/questions/2264622/android-multiple-email-attachments-using-intent
+                            // TODO add the hebrew version
+
                             dialogInterface.dismiss();
                         }
                     });
 
             if (folderOpenable) {
-                dialog.setNegativeButton(R.string.msg_open_folder, new DialogInterface.OnClickListener() {
+                dialog.setNegativeButton(R.string.report_msg_open_folder, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                        startActivity(Intent.createChooser(openFolderIntent, getString(R.string.msg_open_folder)));
+                        startActivity(Intent.createChooser(openFolderIntent, getString(R.string.report_msg_open_folder)));
+                        dialogInterface.dismiss();
+                    }
+                });
+            } else {
+                dialog.setNegativeButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
                     }
                 });
@@ -422,7 +452,6 @@ public class MainActivity extends BudgetStyleActivity {
 
             dialog.show();
 
-            //Toast.makeText(this, getString(R.string.msg_saved_under_folder)+ ": " + todaysDirectory.getAbsolutePath(), Toast.LENGTH_LONG).show();
         }
         catch(IOException e)
         {

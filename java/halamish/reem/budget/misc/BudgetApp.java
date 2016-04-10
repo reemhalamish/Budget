@@ -258,10 +258,17 @@ public class BudgetApp extends Application {
 
 }
 
+/*
+TODO
+
+@ add intent when creating a report to email all files
+*/
 
 
 /*
 ONEDAY
+
+@ add option to see how much budget/expenses for year,month,week
 
 @ animate swapping two items at MainActivity
 
@@ -279,19 +286,6 @@ ONEDAY
 
 @ at ItemActivity when clicking the sum, it will open some nice animation of money and will show you some fancy graph
 with the cur-amount of every week. with some nice massage telling you if you got better or worse
-
-@ the design of BudgetLineParser will cause troubles when using the app long time - O(n)
-should go for a better design - add column "archived" in BudgetLine SQLite tables and ask only for archived\all
-(then the parser will need an access to the db itself?)
-can be solved either by auto-deleting when reaching more then 1000 lines
-
-
-@ add some cute intro like "it's your first time here, do you want to add some of our common budgets?
-(supermarket, blahblahblah)
-with a checkbox and a default value that can be changed, plus add some more with an empty line (another empty line will appear if this line gets populated)
-
-
-@ make all work with db run in another thread and a nice spiralla thingy will move round until it's done
 
 @ ACHIEVEMENTS - when user does good stuff (double - one for week, one for month) e.g.:
    budget >0 at weekend for 1 time in a row,

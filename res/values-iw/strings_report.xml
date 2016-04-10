@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+   
+    <string name="report_msg_look_for_folder_budget">יצרנו בשבילך תיקיה בשם Budget ושמרנו בתוכה את הדוח. אם בא לך, אפשר גם לשלוח את הקבצים דרך המייל.</string>
+	    <string name="report_msg_saved_under_folder">הדוח נשמר תחת התיקיה</string>
+    <string name="report_msg_open_folder">לפתיחת התיקיה</string>
+
+       <string name="report_header_budgetline">מזהה_שורה, כמות, סוג, כותרת, פרטים, תאריך</string>
+       <string name="report_header_budgetitem">מזהה_פריט, שם, זמן_עדכון, כמות_נוספת_בכל_עדכון, יתרה_נוכחית</string>
+       <string name="report_filename_main">_ראשי_</string>
+       <string name="report_error">קרתה תקלה, נסו למחוק את התיקיה Budget בכרטיס הSD ולנסות שוב</string>
+       <string name="report_share_as_attachment">שיתוף הדוח באימייל!</string>
+
+       <string name="report_email_subject">דוח של באדג\'ט</string>
+       <string name="report_email_body">נוצר בתאריך</string>
+
+</resources>
