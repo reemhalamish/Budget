@@ -62,6 +62,8 @@ public class MainActivityMultiSelectHandler {
         atMultiSelectMode = true;
         aa.startMultiSelect();
 
+        normalStatePlus.setVisibility(View.GONE);
+
         multi_delete.setOnClickListener(multipleDeleteDialogCreator());
         multi_info.setOnClickListener(multipleInfoDialogCreator());
         multi_swap.setOnClickListener(multipleSwapTransition());

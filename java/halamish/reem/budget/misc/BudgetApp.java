@@ -259,14 +259,14 @@ public class BudgetApp extends Application {
 }
 
 /*
-TODO
-
-@ add intent when creating a report to email all files
+TODO: nothing :)
 */
 
 
 /*
 ONEDAY
+
+@ create a walk-through (like the tutorial) for the budget-report, with slides such as "your expenses are... that means for a year... your budget is... for a year..." and stuff
 
 @ add option to see how much budget/expenses for year,month,week
 

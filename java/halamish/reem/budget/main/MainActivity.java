@@ -172,7 +172,7 @@ public class MainActivity extends BudgetStyleActivity {
         }
         aa.notifyDataSetChanged();
         super.onResume();
-        findViewById(R.id.iv_main_add).setVisibility(View.VISIBLE); // the plus button
+//        findViewById(R.id.iv_main_add).setVisibility(View.VISIBLE); // the plus button
     }
 
     @Override
@@ -426,7 +426,6 @@ public class MainActivity extends BudgetStyleActivity {
                             emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
                             startActivity(Intent.createChooser(emailIntent, getString(R.string.report_share_as_attachment)));
                             // got from http://stackoverflow.com/questions/2264622/android-multiple-email-attachments-using-intent
-                            // TODO add the hebrew version
 
                             dialogInterface.dismiss();
                         }
