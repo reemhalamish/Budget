@@ -15,7 +15,7 @@ public class BudgetLine implements Serializable{
     public enum BudgetLineEventType {
         AUTO_UPDATE(0),
         USER_INPUT(1),
-        ARCHIVE_ENDS_HERE(2),
+        ARCHIVE_ENDS_HERE(2), // not used
         BUDGET_CREATED(3),
         MOVE_FROM_LAST_TIME(4),
         BUDGET_CHANGE_AMOUNT(5);

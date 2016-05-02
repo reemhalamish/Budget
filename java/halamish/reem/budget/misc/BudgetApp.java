@@ -18,6 +18,7 @@ import halamish.reem.budget.data.BudgetLine;
 import halamish.reem.budget.data.DatabaseHandler;
 import halamish.reem.budget.main.MainActivity;
 import halamish.reem.budget.main.MainActivityMultiSelectHandler;
+import halamish.reem.budget.report.ReportActivity;
 
 /**
  * Created by Re'em on 10/17/2015.
@@ -81,7 +82,7 @@ public class BudgetApp extends Application {
 
             weeksPassed =
                     rightNow.get(Calendar.WEEK_OF_YEAR) - lastUpdated.get(Calendar.WEEK_OF_YEAR)
-                    + 12 * (rightNow.get(Calendar.YEAR) - lastUpdated.get(Calendar.YEAR));
+                    + 52 * (rightNow.get(Calendar.YEAR) - lastUpdated.get(Calendar.YEAR));
         }
         if (monthsPassed > 0) {
             Calendar dispCal = Calendar.getInstance();
@@ -163,6 +164,12 @@ public class BudgetApp extends Application {
         boolean finishedTutorial = prefs.getBoolean(FINISHED_TUTORIAL, false);
 
         final Intent nextActivity;
+
+        // TODO delete this and return the old when finished
+        nextActivity = new Intent(BudgetApp.this, ReportActivity.class);
+        nextActivity.putExtra(FirstActivity.SHOULD_DISPLAY_ENGLISH_HEB_BUTTONS, false);
+
+        /*
         if (finishedTutorial) {
             nextActivity = new Intent(BudgetApp.this, MainActivity.class);
             nextActivity.putExtra(FirstActivity.SHOULD_DISPLAY_ENGLISH_HEB_BUTTONS, false);
@@ -170,6 +177,7 @@ public class BudgetApp extends Application {
             nextActivity = new Intent(BudgetApp.this, TutorialActivity.class);
             nextActivity.putExtra(FirstActivity.SHOULD_DISPLAY_ENGLISH_HEB_BUTTONS, true);
         }
+        */
         introActivity.appReadyToLaunch(nextActivity);
         introActivity = null;
     }
@@ -259,7 +267,14 @@ public class BudgetApp extends Application {
 }
 
 /*
-TODO: nothing :)
+TODO:
+in files, need to save hebrew as utf8, not ansi as currently
+add an icon to "show summary"
+add an activity to "show summary"
+create a graph from activity "show summary"
+
+done:
+fixed finish() called at inside ItemActivity when pressing editItem
 */
 
 

@@ -2,6 +2,7 @@ package halamish.reem.budget.item;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -137,7 +138,7 @@ public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
             txtDetails.setTextColor(Color.BLACK);
 
             if (curLine.getAmount() >= 0) {
-                txtAmount.setTextColor(Color.parseColor("#006900"));
+                txtAmount.setTextColor(ContextCompat.getColor(getContext(), R.color.balance_more_than_zero));
             } else {
                 txtAmount.setTextColor(Color.RED);
             }
@@ -272,7 +273,7 @@ public class ListViewItemAdapter extends MyAdapter<BudgetLine> {
 
     @Override
     public void updateAdapter() {
-        List<BudgetLine> newItems = (new DatabaseHandler(getContext()).tblGetAllBudgetLines(item, null));
+        List<BudgetLine> newItems = (new DatabaseHandler(getContext()).tblGetAllBudgetLines(item));
         parser.parseNewList(newItems);
         loadFromParserAndNotify();
     }

@@ -34,6 +34,7 @@ public class ItemActivity extends BudgetStyleActivity {
     private static final String ITEM_NAME = "item_name";
     private static final int NEW_LINE_REQUEST = 1;
     private static final int EDIT_LINE_REQUEST = 2;
+    private static final int EDIT_ITEM_REQUEST = 3;
     private static final String TAG = "ItemActivity";
     private static final long FADE_AWAY_DUR = 250; // for the sandclock onCliCkListener
     private static final long FRAME_CHANGE_DUR = 300;
@@ -69,7 +70,7 @@ public class ItemActivity extends BudgetStyleActivity {
         lv_allItems =(ListView) findViewById(R.id.lv_itemactivity_main);
         db = new DatabaseHandler(this);
         BudgetItem curItem = db.getBudgetItem(budgetItemName);
-        BudgetLinesParser parser = new BudgetLinesParser(db.tblGetAllBudgetLines(curItem, null));
+        BudgetLinesParser parser = new BudgetLinesParser(db.tblGetAllBudgetLines(curItem));
         aa = new ListViewItemAdapter(
                 this,
                 R.layout.budget_line,
@@ -223,11 +224,10 @@ public class ItemActivity extends BudgetStyleActivity {
     }
 
     private void createEditItemDialog(Context context, final String itemName) {
-        finish();
         Intent editItemIntent = new Intent(context, MessWithItemDialog.class);
         editItemIntent.putExtra("item_action", MessWithItemDialog.ItemAction.EDIT);
         editItemIntent.putExtra("item_name", itemName);
-        context.startActivity(editItemIntent);
+        startActivityForResult(editItemIntent, EDIT_ITEM_REQUEST);
 
     }
 
@@ -354,11 +354,11 @@ public class ItemActivity extends BudgetStyleActivity {
                             }
 
                             private void createLineEditDialog(BudgetLine line) {
-                                Intent addLineIntent = new Intent(ItemActivity.this, MessWithLineDialog.class);
-                                addLineIntent.putExtra(MessWithLineDialog.ITEM_NAME, budgetItemName);
-                                addLineIntent.putExtra(MessWithLineDialog.LINE_ACTUAL, line);
+                                Intent editLineIntent = new Intent(ItemActivity.this, MessWithLineDialog.class);
+                                editLineIntent.putExtra(MessWithLineDialog.ITEM_NAME, budgetItemName);
+                                editLineIntent.putExtra(MessWithLineDialog.LINE_ACTUAL, line);
                                 // Log.d(TAG, "Starting activity MessWithLineDialog");
-                                startActivityForResult(addLineIntent, EDIT_LINE_REQUEST);
+                                startActivityForResult(editLineIntent, EDIT_LINE_REQUEST);
                             }
                         })
 
@@ -387,6 +387,11 @@ public class ItemActivity extends BudgetStyleActivity {
         } else if (requestCode == EDIT_LINE_REQUEST) {
             if (resultCode == RESULT_OK) {
                 Toast.makeText(this, R.string.msg_line_success_edit, Toast.LENGTH_SHORT).show();
+                aa.updateAdapter();
+                startSandClockAnimationIfNeeded();
+            }
+        } else if (requestCode == EDIT_ITEM_REQUEST) {
+            if (resultCode == RESULT_OK) {
                 aa.updateAdapter();
                 startSandClockAnimationIfNeeded();
             }

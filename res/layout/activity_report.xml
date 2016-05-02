@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@drawable/blue_white_blue_gradient"
+    android:padding="8dp"
+
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="*"
+            android:shrinkColumns="*"
+            android:id="@+id/tl_report_bdgt_xpnss"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Your Budget&apos;s Sum"
+                android:id="@+id/tv_report_budget_sum"
+                android:gravity="center"
+            />
+
+            <TableRow>
+                <TextView
+                    android:text="Total"
+                    android:id="@+id/tv_report_bdgt_hdrs_total"
+                    style="@style/report_table_cell"
+                    />
+                <TextView
+                    android:text="Yearly"
+                    android:id="@+id/tv_report_bdgt_hdrs_yearly"
+                    style="@style/report_table_cell"
+                    />
+                <TextView
+                    android:text="Monthly"
+                    android:id="@+id/tv_report_bdgt_hdrs_monthly"
+                    style="@style/report_table_cell"
+                    />
+                <TextView
+                    android:text="Weekly"
+                    style="@style/report_table_cell"
+                    android:id="@+id/tv_report_bdgt_hdrs_weekly"
+                    />
+                <TextView
+                    android:text="Daily"
+                    android:id="@+id/tv_report_bdgt_hdrs_daily"
+                    style="@style/report_table_cell"
+                    />
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:text="1234"
+                    android:id="@+id/tv_report_bdgt_info_total"
+                    style="@style/report_table_cell_budget"
+                    />
+                <TextView
+                    android:text="1234"
+                    android:id="@+id/tv_report_bdgt_info_yearly"
+                    style="@style/report_table_cell_budget"
+                    />
+                <TextView
+                    android:text="1234"
+                    android:id="@+id/tv_report_bdgt_info_monthly"
+                    style="@style/report_table_cell_budget"
+                    />
+                <TextView
+                    android:text="1234"
+                    style="@style/report_table_cell_budget"
+                    android:id="@+id/tv_report_bdgt_info_weekly"
+                    />
+                <TextView
+                    android:text="1234"
+                    android:id="@+id/tv_report_bdgt_info_daily"
+                    style="@style/report_table_cell_budget"
+                    />
+            </TableRow>
+
+            <Space
+                android:layout_height="15dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Your Expenses Sum"
+                android:id="@+id/tv_report_xpnss_sum"
+                android:gravity="center"
+                />
+            <TableRow>
+                <TextView
+                    android:text="Total"
+                    android:id="@+id/tv_report_xpnss_hdrs_total"
+                    style="@style/report_table_cell"
+                    />
+                <TextView
+                    android:text="Yearly"
+                    android:id="@+id/tv_report_xpnss_hdrs_yearly"
+                    style="@style/report_table_cell"
+                    />
+                <TextView
+                    android:text="Monthly"
+                    android:id="@+id/tv_report_xpnss_hdrs_monthly"
+                    style="@style/report_table_cell"
+                    />
+                <TextView
+                    android:text="Weekly"
+                    style="@style/report_table_cell"
+                    android:id="@+id/tv_report_xpnss_hdrs_weekly"
+                    />
+                <TextView
+                    android:text="Daily"
+                    android:id="@+id/tv_report_xpnss_hdrs_daily"
+                    style="@style/report_table_cell"
+                    />
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:text="1234"
+                    android:id="@+id/tv_report_xpnss_info_total"
+                    style="@style/report_table_cell_expense"
+                    />
+                <TextView
+                    android:text="1234"
+                    android:id="@+id/tv_report_xpnss_info_yearly"
+                    style="@style/report_table_cell_expense"
+                    />
+                <TextView
+                    android:text="1234"
+                    android:id="@+id/tv_report_xpnss_info_monthly"
+                    style="@style/report_table_cell_expense"
+                    />
+                <TextView
+                    android:text="1234"
+                    style="@style/report_table_cell_expense"
+                    android:id="@+id/tv_report_xpnss_info_weekly"
+                    />
+                <TextView
+                    android:text="1234"
+                    android:id="@+id/tv_report_xpnss_info_daily"
+                    style="@style/report_table_cell_expense"
+                    />
+            </TableRow>
+
+
+        </TableLayout>
+
+
+        <Space
+            android:layout_height="15dp"
+            android:layout_width="match_parent"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Per Budget Item"
+            android:id="@+id/tv_report_item_header"
+            android:gravity="center"
+            />
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="*"
+            android:id="@+id/tl_report_items"
+            >
+        <TableRow>
+            <TextView
+                android:text="Item"
+                android:id="@+id/tv_report_items_item"
+                style="@style/report_table_cell_items"
+                />
+            <TextView
+                android:text="Budget\nAverage"
+                style="@style/report_table_cell_items"
+                android:id="@+id/tv_report_items_budget"
+                />
+            <TextView
+                android:text="Expense\nAverage"
+                android:id="@+id/tv_report_items_expense"
+                style="@style/report_table_cell_items"
+                />
+            <TextView
+                android:text="Neto"
+                style="@style/report_table_cell_items"
+                android:id="@+id/tv_report_items_neto"
+                />
+            <TextView
+                android:text="Updated"
+                android:id="@+id/tv_report_items_updated"
+                style="@style/report_table_cell_items"
+                />
+            <TextView
+                android:text="Neto\nYearly"
+                style="@style/report_table_cell_items"
+                android:id="@+id/tv_report_items_neto_yearly"
+                />
+
+        </TableRow>
+
+        </TableLayout>
+
+
+        <Space
+            android:layout_height="15dp"
+            android:layout_width="match_parent"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="* Please notice: ''Total'' means the total amount. all other columns are the averaged amount over a period of time"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save as File"
+            android:id="@+id/btn_report_save_as_file"
+            android:layout_gravity="center_horizontal" />
+    </LinearLayout>
+</ScrollView>

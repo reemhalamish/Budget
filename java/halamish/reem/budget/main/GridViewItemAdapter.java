@@ -160,7 +160,7 @@ public class GridViewItemAdapter extends MyAdapter<BudgetItem> {
     @Override
     public void updateAdapter() {
         clear();
-        List<BudgetItem> newItems = new DatabaseHandler(getContext()).getAllBudgetItems(null);
+        List<BudgetItem> newItems = new DatabaseHandler(getContext()).getAllBudgetItems();
         addAll(newItems);
         allItems = newItems;
         notifyDataSetChanged();

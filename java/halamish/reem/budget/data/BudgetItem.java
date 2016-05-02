@@ -25,8 +25,8 @@ public class BudgetItem {
     private String pretty_name;
 
 
-
-    public BudgetItem() {}
+    public BudgetItem() {
+    }
 
 
     public BudgetItem(String name, String auto_update, int auto_update_amount) {
@@ -57,6 +57,7 @@ public class BudgetItem {
     /**
      * TO BE USED SOLELY IN THE TUTORIAL!
      * HAS NOTHING TO ACTUALLY INSERT TO THE DB!
+     *
      * @param prettyName
      * @param curAmount
      */
@@ -73,7 +74,6 @@ public class BudgetItem {
     public void setId(int id) {
         this.id = id;
     }
-
 
 
     public String getName() {
@@ -113,6 +113,7 @@ public class BudgetItem {
     public String getAuto_update() {
         return auto_update;
     }
+
     public String getLocalizedAuto_update(Context context) {
         if (auto_update.equals(WEEKLY)) {
             return context.getString(R.string.budgetitem_weekly);
@@ -154,5 +155,11 @@ public class BudgetItem {
         return null;
     }
 
-}
+    public int getMultiplyFactorForYear() {
+        if (auto_update.equals(WEEKLY)) {
+            return 52;
+        }
+        return 12;
+    }
 
+}

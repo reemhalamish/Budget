@@ -32,6 +32,22 @@
         <item name="android:layout_margin">@dimen/activity_main_mode_multi_select_button_margin</item>
     </style>
 
+    <style name="report_table_cell" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:padding">3dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="report_table_cell_expense" parent="report_table_cell">
+        <item name="android:textColor">#f00</item>
+        <item name="android:alpha">0.8</item>
+    </style>
+    <style name="report_table_cell_budget" parent="report_table_cell">
+        <item name="android:textColor">@color/balance_more_than_zero</item>
+        <item name="android:alpha">0.8</item>
+    </style>
+    <style name="report_table_cell_items" parent="report_table_cell">
+        <item name="android:textSize">15sp</item>
+    </style>
+
 
 
 </resources>

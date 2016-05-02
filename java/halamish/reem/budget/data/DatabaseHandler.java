@@ -305,8 +305,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return null;
     }
 
+    // public wrapper
+    public List<BudgetItem> getAllBudgetItems() {
+        SQLiteDatabase db = getWritableDatabase();
+        return getAllBudgetItems(db);
+    }
+
     // Getting All budgetItems
-    public List<BudgetItem> getAllBudgetItems(SQLiteDatabase db) {
+    private List<BudgetItem> getAllBudgetItems(SQLiteDatabase db) {
         List<BudgetItem> budgetItems = new ArrayList<>();
         boolean externalDB = db != null;
 
@@ -490,7 +496,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values = new ContentValues();
         values.put(MA_KEY_ORDER_ID, a_id);
         db.update(TABLE_ALL_TALBES, values, MA_KEY_NAME + " = ?",
-                new String[] { b.getName() });
+                new String[]{b.getName()});
 
         a.logMyself();
         b.logMyself();
@@ -673,8 +679,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return null;
     }
 
+    // public wrapper
+    public List<BudgetLine> tblGetAllBudgetLines(BudgetItem item) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return tblGetAllBudgetLines(item, db);
+    }
     // Getting All budgetLines
-    public List<BudgetLine> tblGetAllBudgetLines(BudgetItem item, SQLiteDatabase db) {
+    private List<BudgetLine> tblGetAllBudgetLines(BudgetItem item, SQLiteDatabase db) {
         List<BudgetLine> budgetLines = new ArrayList<>();
         // Select All Query
         String selectQuery = "SELECT  * FROM " + item.getName();

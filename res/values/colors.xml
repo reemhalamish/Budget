@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="statusbar_color" type="color">#0a3769</item>
+    <item name="barrier_blue" type="color">#002555</item>
+    <item name="barrier_gray" type="color">#888</item>
+
+    <item name="balance_more_than_zero" type="color">#006900</item>
 </resources>

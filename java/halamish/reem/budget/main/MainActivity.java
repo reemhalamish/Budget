@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import halamish.reem.budget.report.ReportActivity;
 import halamish.reem.budget.style.BudgetStyleActivity;
 import halamish.reem.budget.misc.Settings;
 import halamish.reem.budget.Activities.SettingsActivity;
@@ -67,7 +68,7 @@ public class MainActivity extends BudgetStyleActivity {
         aa = new GridViewItemAdapter(
                 this,
                 R.layout.budget_item,
-                db.getAllBudgetItems(null),
+                db.getAllBudgetItems(),
                 getEveryItemOnClickListener(),
                 getEveryItemOnClickMultiSelectModeListener(),
                 getEveryItemLongClick(),
@@ -229,6 +230,11 @@ public class MainActivity extends BudgetStyleActivity {
 
             // got from here
             // http://stackoverflow.com/questions/8701634/send-email-intent
+            return true;
+        }
+
+        if (id == R.id.action_main_report_experimental) {
+            startActivity(new Intent(MainActivity.this, ReportActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
@@ -363,7 +369,7 @@ public class MainActivity extends BudgetStyleActivity {
             String reportLine = getString(R.string.report_header_budgetitem) + "\n";
             mainWriter.append(reportLine);
 
-            List<BudgetItem> allItems = db.getAllBudgetItems(null);
+            List<BudgetItem> allItems = db.getAllBudgetItems();
             for (BudgetItem item : allItems) {
                 reportLine =
                     item.getId() + ", " +
@@ -378,7 +384,7 @@ public class MainActivity extends BudgetStyleActivity {
                 FileWriter itemWriter = new FileWriter(itemReportFile);
                 reportLine = getString(R.string.report_header_budgetline) + "\n";
                 itemWriter.append(reportLine);
-                for (BudgetLine line : db.tblGetAllBudgetLines(item, null)) {
+                for (BudgetLine line : db.tblGetAllBudgetLines(item)) {
                     reportLine =
                             line.getId() + "," +
                             line.getAmount() + "," +

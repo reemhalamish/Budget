@@ -96,7 +96,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="#888"
+            android:background="@color/barrier_gray"
             android:id="@+id/hl_settings_line"
             android:layout_below="@+id/tv_settings_close_app" />
 
@@ -145,7 +145,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="#888"
+        android:background="@color/barrier_gray"
         android:id="@+id/hl_settings_line_2"
         android:layout_below="@+id/tv_settings_hint_budget" />
     <Space
